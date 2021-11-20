@@ -24,6 +24,8 @@ public:
 	std::vector<User*> users;
 	int current_appearances = 0;
 	std::vector<Keyword*> keyword_list;
+	int five_turn_check = 0;
+	bool has_ans = false;
 	std::vector<User*> queue;
 	Keyword* keyword;
 	Keyword* hint;

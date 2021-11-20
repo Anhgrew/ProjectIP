@@ -17,6 +17,7 @@ public:
     std::string name;
     std::string status;     // success, miss, win, lose
     std::string ans;        // answer 1 character
+    std::string guess;
     bool final_ans = false; // answer whole keyword
     std::string mode;               // mode of answer ('0' = character, '1' =  whole keyword)
     int score = 0;
