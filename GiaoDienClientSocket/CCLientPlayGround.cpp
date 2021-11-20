@@ -28,6 +28,7 @@ void CCLientPlayGround::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_GUESSWORD, txtGuessWord);
 	DDX_Control(pDX, IDC_KEYWORD, txtKeyWord);
 	DDX_Control(pDX, IDC_SCORE, txtScore);
+	DDX_Control(pDX, IDC_CLIENTNAME, txtClientName);
 }
 
 
@@ -36,6 +37,7 @@ BEGIN_MESSAGE_MAP(CCLientPlayGround, CDialogEx)
 END_MESSAGE_MAP()
 
 BOOL CCLientPlayGround::OnInitDialog() {
+	CDialogEx::OnInitDialog();
 	// Init if required, can add later
 	GetDlgItem(IDC_SENDANSWER)->EnableWindow(FALSE);
 
@@ -65,6 +67,10 @@ BOOL CCLientPlayGround::OnInitDialog() {
 	} else {
 		txtKeyWord.SetReadOnly(FALSE);
 	}*/
+	CString name;
+	name = res[0].c_str();
+	txtClientName.SetWindowText(name);
+
 	return TRUE;
 }
 
