@@ -1,0 +1,11 @@
+5-Animals or fish and bird
+Tiger
+Live in the forest
+Fish
+Live in the water
+Lion 
+Live in the forest
+Shark
+Live in the ocean
+Eagle
+Live in the sky
