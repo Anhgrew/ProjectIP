@@ -30,8 +30,7 @@
 #define IDC_UserName                    1015
 #define IDC_GUESSWORD                   1016
 #define IDC_KEYWORD                     1017
-#define IDC_EDIT1                       1018
-#define IDC_CLNAME                      1018
+#define IDC_CLIENTNAME                  1018
 
 // Next default values for new objects
 // 
