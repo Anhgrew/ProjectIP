@@ -70,6 +70,9 @@ BOOL CCLientPlayGround::OnInitDialog() {
 	CString name;
 	name = res[0].c_str();
 	txtClientName.SetWindowText(name);
+	CString score;
+	score = res[1].c_str();
+	txtScore.SetWindowTextW(score);
 
 	return TRUE;
 }
