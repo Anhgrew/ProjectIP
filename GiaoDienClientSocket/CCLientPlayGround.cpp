@@ -3,13 +3,16 @@
 
 #include "pch.h"
 #include "GiaoDienClientSocket.h"
+#include "GiaoDienClientSocketDlg.h"
 #include "CCLientPlayGround.h"
 #include "afxdialogex.h"
+#include "LogNoti.h"
 
 void HiddenRemain(std::string guessWord, std::string& keyWord, std::string& msg, std::string& disWord);
 // CCLientPlayGround dialog
 
 IMPLEMENT_DYNAMIC(CCLientPlayGround, CDialogEx)
+HANDLE refreshThread;
 
 CCLientPlayGround::CCLientPlayGround(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_CLIENTPLAYGROUND, pParent)
@@ -34,6 +37,8 @@ void CCLientPlayGround::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CCLientPlayGround, CDialogEx)
 	ON_BN_CLICKED(IDC_SENDANSWER, &CCLientPlayGround::OnBnClickedSendanswer)
+	ON_BN_CLICKED(BTN_REFRESH, &CCLientPlayGround::OnBnClickedRefresh)
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 BOOL CCLientPlayGround::OnInitDialog() {
@@ -74,6 +79,8 @@ BOOL CCLientPlayGround::OnInitDialog() {
 	CString score;
 	score = res[5].c_str();
 	txtScore.SetWindowTextW(score);
+
+	SetTimer(1, 2000, NULL);
 
 	return TRUE;
 }
@@ -211,7 +218,6 @@ void CCLientPlayGround::OnBnClickedSendanswer()
 
 	std::string gW = CT2A(guessW);
 	std::string kW = CT2A(keyW);
-	std::string msg;
 	//HiddenRemain(gW, keyword, msg, disWord);
 	
 	// Display on list chat result
@@ -258,5 +264,18 @@ void HiddenRemain(std::string guessWord, std::string& keyWord, std::string& msg,
 	}
 
 	msg = "Character '" + guessWord + "' has " + std::to_string(positions.size()) + " occurences.";
-
 }
+
+void CCLientPlayGround::OnBnClickedRefresh()
+{
+	// TODO: Add your control notification handler code here
+	LogNoti noti;
+	noti.DoModal();
+}
+
+void CCLientPlayGround::OnTimer(UINT_PTR nIDEvent)
+{
+	CCLientPlayGround::OnBnClickedRefresh();
+	CDialogEx::OnTimer(nIDEvent);
+}
+

@@ -34,6 +34,7 @@ public:
 	CEdit txtGuessWord;
 	CEdit txtKeyWord;
 	CEdit txtScore;
+	std::string msg;
 
 	using convert_t = std::codecvt_utf8<wchar_t>;
 	std::wstring_convert<convert_t, wchar_t> strconverter;
@@ -49,4 +50,6 @@ public:
 
 	std::string disWord;
 	CEdit txtClientName;
+	afx_msg void OnBnClickedRefresh();
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };

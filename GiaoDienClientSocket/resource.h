@@ -16,7 +16,6 @@
 #define IDC_LISTPG                      1000
 #define IDC_SUMMARIZE                   1000
 #define IDC_EDIT2                       1004
-#define BTN_REFRESH                     1004
 #define IDC_SCORE                       1004
 #define IDC_EDIT3                       1005
 #define BTN_CONNECT                     1006
@@ -24,6 +23,7 @@
 #define IDC_BUTTON1                     1008
 #define IDC_SENDANSWER                  1008
 #define IDC_BUTTON2                     1009
+#define BTN_REFRESH                     1009
 #define BTN_REGISTER                    1013
 #define IDC_IP                          1014
 #define IDC_Port                        1015

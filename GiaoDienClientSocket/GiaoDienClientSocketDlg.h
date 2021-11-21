@@ -73,7 +73,6 @@ public:
 	virtual void OnRecept(CString msg);
 	void CloseAllButtons();
 
-
 private:
 	CConnectedSocket mClientSocket;
 	CString mIpAddress;
