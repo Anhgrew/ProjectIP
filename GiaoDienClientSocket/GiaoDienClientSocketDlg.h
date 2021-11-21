@@ -10,7 +10,7 @@
 #include "CConnectedSocket.h"
 #include "IMySocketListener.h"
 #include<vector>
-#include <winsock.h>
+#include <winsock2.h>
 #define PORT 9090
 #pragma warning(disable:4996) 
 using namespace std;
