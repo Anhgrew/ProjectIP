@@ -9,7 +9,7 @@
 #include "LogNoti.h"
 #include <thread>
 
-void HiddenRemain(std::string guessWord, std::string& keyWord, std::string& msg, std::string& disWord);
+void HiddenRemain(std::string guessWord, std::string keyWord, std::string& msg, std::string& disWord);
 // CCLientPlayGround dialog
 
 IMPLEMENT_DYNAMIC(CCLientPlayGround, CDialogEx)
@@ -149,9 +149,13 @@ BOOL CCLientPlayGround::OnInitDialog() {
 		//CString str;
 		//str.Format(_T("Hi %d"), res.size());
 		//MessageBoxW(str);
-		if (res.size() > 6 && res[0].compare("Let 's start") == 0 && res[6].compare("Your turn") == 0) {
+		if (res.size() > 8 && res[0].compare("Let 's start") == 0 && res[6].compare("Your turn") == 0) {
 			GetDlgItem(IDC_SENDANSWER)->EnableWindow(TRUE);
-
+			listPlayGround.AddString(CString("HINT: ") + (LPCTSTR)strconverter.from_bytes(res[2]).c_str());
+			disWord = res[8];
+			HiddenRemain("", res[7], msg, disWord);
+			listPlayGround.AddString(CString("KEYWORD: ") + disWord.c_str());
+			listPlayGround.SetCurSel(listPlayGround.GetCount() - 1);
 		}
 		else {	
 			GetDlgItem(IDC_SENDANSWER)->EnableWindow(FALSE);
@@ -231,6 +235,19 @@ void CCLientPlayGround::OnBnClickedSendanswer()
 			}
 			else if (res[5].compare("") != 0 && res[5].compare("Correct guess") == 0) {
 				MessageBox(_T("Correct guess"));
+<<<<<<< HEAD
+=======
+				MessageBox(_T("3"));
+				std::string gW = CT2A(guessW);
+				std::string kW = CT2A(keyW);
+				disWord = res[8];
+				HiddenRemain("", res[7], msg, disWord);
+
+				// Display on list chat result
+				listPlayGround.AddString((LPCTSTR)strconverter.from_bytes(msg).c_str());
+				listPlayGround.AddString(CString("KEYWORD: ") + disWord.c_str());
+				listPlayGround.SetCurSel(listPlayGround.GetCount() - 1);
+>>>>>>> f0034d6... update display hint
 			}
 			else if (res[5].compare("") != 0 && res[5].compare("Wrong guess") == 0) {
 				MessageBox(_T("Wrong guess"));
@@ -329,20 +346,18 @@ void CCLientPlayGround::OnBnClickedSendanswer()
 
 	//Receive from Server
 
-	std::string gW = CT2A(guessW);
-	std::string kW = CT2A(keyW);
-	//HiddenRemain(gW, keyword, msg, disWord);
-	
-	// Display on list chat result
-	listPlayGround.AddString((LPCTSTR)strconverter.from_bytes(msg).c_str());
-	listPlayGround.AddString(CString("The Remain words: ") + disWord.c_str());
-	listPlayGround.SetCurSel(listPlayGround.GetCount() - 1);
-
 	//// Show Score
+<<<<<<< HEAD
 	//int score = 10;
 	//CString sc;
 	//sc.Format(_T("%d"), score);
 	//txtScore.SetWindowTextW(sc);
+=======
+	/*int score = 10;
+	CString sc;
+	sc.Format(_T("%d"), score);
+	txtScore.SetWindowTextW(sc);*/
+>>>>>>> f0034d6... update display hint
 
 	//Handle when user make wrong guess word/wrong keyword
 	UpdateData(TRUE);
@@ -361,22 +376,29 @@ std::vector<std::string> CCLientPlayGround::split(std::string s, std::string del
 
 }
 
-void HiddenRemain(std::string guessWord, std::string& keyWord, std::string& msg, std::string& disWord) {
+void HiddenRemain(std::string guessWord, std::string keyWord, std::string& msg, std::string& disWord) {
 	std::vector<size_t> positions;
 	size_t pos = keyWord.find(guessWord, 0);
 	size_t spc = keyWord.find(" ", 0);
 
-	while (pos != std::string::npos) {
-		positions.push_back(pos);
-		disWord.replace(pos, 1, guessWord);
-		pos = keyWord.find(guessWord, pos + 1);
+	if (guessWord != "") {
+		while (pos != std::string::npos) {
+			positions.push_back(pos);
+			disWord.replace(pos, 1, guessWord);
+			pos = keyWord.find(guessWord, pos + 1);
+		}
 	}
 	while (spc != std::string::npos) {
 		disWord.replace(spc, 1, " ");
 		spc = keyWord.find(" ", spc + 1);
 	}
 
-	msg = "Character '" + guessWord + "' has " + std::to_string(positions.size()) + " occurences.";
+	if (guessWord == "") {
+		msg = "";
+	}
+	else {
+		msg = "Character '" + guessWord + "' has " + std::to_string(positions.size()) + " occurences.";
+	};
 }
 
 
