@@ -58,7 +58,7 @@ int main()
     srv.sin_addr.s_addr = inet_addr("127.0.0.1");
     srv.sin_port = htons(PORT);
     memset(&(srv.sin_zero), 0, 8);
-    
+
     u_long optval = 0;
 
     res = ioctlsocket(nSocket, FIONBIO, &optval);
@@ -91,15 +91,15 @@ int main()
             cout << "Press any key to exit" << endl;
             WSACleanup();
             exit(EXIT_FAILURE);
-        }       
+        }
         cout << endl << receive_buffer << endl;
         int index = 0;
         while (1) {
-          
+
             if (recv(nSocket, receive_buffer, 256, 0) == -1) {
                 break;
             }
-            cout << endl <<receive_buffer << endl;
+            cout << endl << receive_buffer << endl;
             if (string(receive_buffer).compare("full") == 0) {
                 cout << "Full queue!!!" << endl;
                 cout << "Press any key to exit" << endl;
@@ -111,13 +111,13 @@ int main()
                 break;
             }
             cout << "Input:" << endl;
-            
+
             getline(cin, send_buffer);
             send(nSocket, send_buffer.c_str(), 256, 0);
             cout << "Sended.." << endl;
         }
 
-        char receive_buffer1[256] = { 0, };        
+        char receive_buffer1[256] = { 0, };
         vector<string> res;
         send_buffer = "";
 
@@ -169,5 +169,5 @@ int main()
     //}
     Sleep(300000);
     WSACleanup();
-    
+
 }
