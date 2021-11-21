@@ -40,38 +40,39 @@ BOOL CCLientPlayGround::OnInitDialog() {
 	CDialogEx::OnInitDialog();
 	// Init if required, can add later
 	GetDlgItem(IDC_SENDANSWER)->EnableWindow(FALSE);
-
-	char receive_buffer1[256] = { 0, };
+	char receive_buffer[256];
+	memset(receive_buffer, 0, sizeof receive_buffer);
 	std::vector<std::string> res;
 
-	if (recv(nSocket, receive_buffer1, 256, 0) == -1) {
+	if (recv(nSocket, receive_buffer, 256, 0) == -1) {
 		MessageBox(_T("Can not receive"));
 	}
 	else {
-		res = split(receive_buffer1, ",");
-		index = 0;
+		res = split(receive_buffer, ",");
 
-		if (res.size() > 0 && res[2].compare("Your turn") == 0) {
+		//CString str;
+		//str.Format(_T("Hi %d"), res.size());
+		//MessageBoxW(str);
+		if (res.size() > 6 && res[0].compare("Let 's start") == 0 && res[6].compare("Your turn") == 0) {
 			GetDlgItem(IDC_SENDANSWER)->EnableWindow(TRUE);
-		}
-		else {
 
+		}
+		else {	
+			GetDlgItem(IDC_SENDANSWER)->EnableWindow(FALSE);
 			MessageBox(_T("Please wait for your turn..."));
 		}
 
 	}
 
 	//set readonly when turn < 2
-	/*if (num_turn < 2) {
-		txtKeyWord.SetReadOnly(TRUE);
-	} else {
-		txtKeyWord.SetReadOnly(FALSE);
-	}*/
+
+	txtKeyWord.SetReadOnly(FALSE);
+
 	CString name;
-	name = res[0].c_str();
+	name = res[4].c_str();
 	txtClientName.SetWindowText(name);
 	CString score;
-	score = res[1].c_str();
+	score = res[5].c_str();
 	txtScore.SetWindowTextW(score);
 
 	return TRUE;
@@ -83,34 +84,97 @@ BOOL CCLientPlayGround::OnInitDialog() {
 void CCLientPlayGround::OnBnClickedSendanswer()
 {
 
-	char receive_buffer1[256] = { 0, };
+	CString responseMsg;
+	CString guessW;
+	CString keyW;
+
+
+
+	txtGuessWord.GetWindowTextW(guessW);
+	txtKeyWord.GetWindowTextW(keyW);
+
+	responseMsg = keyW + "," + guessW;
+
+	char receive_buffer[256] = { 0, };
 	std::vector<std::string> res;
 
+	index = 0;
 
 
 
+	GetDlgItem(IDC_SENDANSWER)->EnableWindow(TRUE);
+		
+	send(nSocket, CStringA(responseMsg), 256, 0);
 
-	if (recv(nSocket, receive_buffer1, 256, 0) == -1) {
-		MessageBox(_T("Can not receive"));
+	if (recv(nSocket, receive_buffer, 256, 0) == -1) {
+		MessageBox(_T("Can not send answer"));
 	}
 	else {
-		res = split(receive_buffer1, ",");
-		index = 0;
-		if (res[0].compare("Let's start")) {
-			/*		des = res[2];
-					name = res[4];
-					score = res[5];*/
-			if (res.size() > 0 && res[6].compare("Your turn") == 0) {
+		res = split(receive_buffer, ",");
+		if (res.size() >= 8) {
+			if (res[7].compare("") != 0 && res[7].find("Lost") != std::string::npos) {
+				MessageBox(_T("You lost"));
+				MessageBox(_T("1"));
+
+			}
+			else if (res[7].compare("") != 0 && res[7].find("Congratulations") != std::string::npos) {
+				MessageBox(_T("Congratulations, you are the winner"));
+				MessageBox(_T("2"));
+			}
+			else if (res[5].compare("") != 0 && res[5].compare("Correct guess") == 0) {
+				MessageBox(_T("Correct guess"));
+				MessageBox(_T("3"));
+			}
+			else if (res[5].compare("") != 0 && res[5].compare("Wrong guess") == 0) {
+				MessageBox(_T("Wrong guess"));
+				MessageBox(_T("4"));
+			}
+			CString score = _T("");;
+			score = res[4].c_str();
+			txtScore.SetWindowTextW(score);
+			CString messTmp = _T("");
+			messTmp = res[6].c_str();
+			MessageBox(messTmp);
+			if (res[6].compare("Your turn") == 0) {
 				GetDlgItem(IDC_SENDANSWER)->EnableWindow(TRUE);
 			}
 			else {
-				MessageBox(_T("Please wait for your turn..."));
+				GetDlgItem(IDC_SENDANSWER)->EnableWindow(FALSE);
 			}
+			
 		}
-		else {
-			MessageBox(_T("Please wait ..."));
+		if(res.size() < 8) {
+			if (res[5].compare("") != 0 && res[5].compare("Correct guess") == 0) {
+			MessageBox(_T("Correct guess"));
+			MessageBox(_T("5"));
+			}
+			else if (res[5].compare("") != 0 && res[5].compare("Wrong guess") == 0) {
+			MessageBox(_T("Wrong guess"));
+			MessageBox(_T("6"));
+			}
+			CString score = _T("");;
+			score = res[4].c_str();
+			txtScore.SetWindowTextW(score);
+
+			CString messTmp = _T("");
+			messTmp = res[6].c_str();
+			MessageBox(messTmp);
+			MessageBox(_T("5"));
+			if (res[6].compare("Your turn") == 0) {
+				GetDlgItem(IDC_SENDANSWER)->EnableWindow(TRUE);
+			}
+			else {
+				GetDlgItem(IDC_SENDANSWER)->EnableWindow(FALSE);
+			}
+
 		}
+				
 	}
+	//else {
+	//	GetDlgItem(IDC_SENDANSWER)->EnableWindow(FALSE);
+	//	MessageBox(_T("Please wait for your turn..."));
+	//}
+	
 
 
 	//if (turn.compare("Your turn") == 0) {
@@ -133,20 +197,15 @@ void CCLientPlayGround::OnBnClickedSendanswer()
 	}*/
 
 	// TODO: Add your control notification handler code here
-	CString responseMsg;
-	CString guessW;
-	CString keyW;
-
-	txtGuessWord.GetWindowTextW(guessW);
-	txtKeyWord, GetWindowTextW(keyW);
+	
 
 	//Send response to Server, with format: keyword,guessword
-	responseMsg = keyW + "," + guessW;
-	CT2A buff(responseMsg, CP_UTF8);
+	
+	//CT2A buff(responseMsg, CP_UTF8);
 	//->send to server
 
 	txtGuessWord.SetWindowTextW(_T(""));
-	txtGuessWord.SetWindowTextW(_T(""));
+	txtKeyWord.SetWindowTextW(_T(""));
 
 	//Receive from Server
 

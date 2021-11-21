@@ -221,12 +221,22 @@ void Server:: ProcessNewMessage(int client_socket) {
 
 				if (users[i]->socket_id == client_socket) {
 					if (message.compare("Registration Completed Successfully") == 0) {
-						string message = users[i]->name
+						
+						string message = string("Let 's start")
+							.append(",")
+							.append(to_string(keyword->keyword.size()))
+							.append(",")
+							.append(keyword->description)
+							.append(",")
+							.append(to_string(users[i]->id))
+							.append(",")
+							.append(users[i]->name)
 							.append(",")
 							.append(to_string(users[i]->score))
 							.append(",")
 							.append(users[i]->turn ? "Your turn" : "No turn");
 						send(users[i]->socket_id, message.c_str(), message.size(), 0);
+						cout << "Return message: " << message << endl;
 						break;
 					}
 					
@@ -237,7 +247,7 @@ void Server:: ProcessNewMessage(int client_socket) {
 
 			cout << endl << "**********************************";
 		}
-		if (users.size() == N || start) {
+		else if (users.size() == N || start) {
 			start = true;
 			ProcessUsers(buffer, client_socket);
 			//int id;
@@ -387,33 +397,34 @@ void Server::setKeyWordList(vector<Keyword*> keywords)
 
 void Server::ProcessUsers(char buffer[256], int client_socket)
 {
-	if (!start_receive_ans) {
-		for (int i = 0; i < users.size(); i++)
-		{
-			if (users[i] != NULL && users[i]->socket_id != 0) {
-				users[0]->turn = true;
-				string message = string("Let 's start")
-					.append(",")
-					.append(to_string(keyword->keyword.size()))
-					.append(",")
-					.append(keyword->description)
-					.append(",")
-					.append(to_string(users[i]->id))
-					.append(",")
-					.append(users[i]->name)
-					.append(",")
-					.append(to_string(users[i]->score))
-					.append(",")
-					.append(users[i]->turn ? "Your turn": "No turn");
-				send(users[i]->socket_id, message.c_str(), message.size(), 0);
+	//if (!start_receive_ans) {
+	//	for (int i = 0; i < users.size(); i++)
+	//	{
+	//		if (users[i] != NULL && users[i]->socket_id != 0) {
+	//			
+	//			string ms = string("Let 's start")
+	//				.append(",")
+	//				.append(to_string(keyword->keyword.size()))
+	//				.append(",")
+	//				.append(keyword->description)
+	//				.append(",")
+	//				.append(to_string(users[i]->id))
+	//				.append(",")
+	//				.append(users[i]->name)
+	//				.append(",")
+	//				.append(to_string(users[i]->score))
+	//				.append(",")
+	//				.append(users[i]->turn ? "Your turn": "No turn");
+	//			send(users[i]->socket_id, ms.c_str(), ms.size(), 0);
+	//			cout << "Return message: " << ms << endl;
 
-
-				//send(clients[i], hiden_len, strlen(hiden_len), 0);
-				//send(clients[i], keyword->description.c_str(), strlen(keyword->description.c_str()), 0);
-			}
-		}
-	}
-	else {
+	//			//send(clients[i], hiden_len, strlen(hiden_len), 0);
+	//			//send(clients[i], keyword->description.c_str(), strlen(keyword->description.c_str()), 0);
+	//		}
+	//	}
+	//	start_receive_ans = true;
+	//}
+	//else {
 		vector<string> ans = split(buffer, ",");
 		five_turn_check++;
 		string word_key = ans[0];
@@ -464,8 +475,13 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 					if (i <= users.size()-1 && (response_message.compare("Wrong keyword") == 0 || response_message.compare("Wrong guess") == 0)) {
 						users[i]->turn = false;
 
-						if (response_message.compare("Wrong keyword") == 0) users[i]->final_ans = true;
-
+						if (response_message.compare("Wrong keyword") == 0) {
+							users[i]->final_ans = true;
+							users[i]->status = "Wrong keyword";
+						}
+						if (response_message.compare("Wrong guess") == 0) {
+							users[i]->status = "Wrong guess";
+						}
 						for (int j = i + 1; j < users.size(); j++) {	
 							if (users[j]->final_ans == false && users[j]->socket_id != 0) {
 								
@@ -474,12 +490,14 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 							}
 						}
 					}
-					else if (i < users.size() - 1 && response_message.compare("Correct guess") == 0) {
+					else if (i <= users.size() - 1 && response_message.compare("Correct guess") == 0) {
 						users[i]->score += 1;
+						users[i]->status = "Correct guess";
 					}
-					else if (i < users.size() - 1 && response_message.compare("Correct keyword") == 0) {
+					else if (i <= users.size() - 1 && response_message.compare("Correct keyword") == 0) {
 						winner = users[i]->name;
 						users[i]->score += 5;
+						users[i]->status = "Correct keyword";
 						game_end = true;
 					}
 
@@ -496,13 +514,16 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 						.append(response_message)
 						.append(",")
 						.append(users[i]->turn ? "Your turn" : "No turn");
+						
 					if (game_end) {
 						message.append(",").append("Congratulations to the winner [ " + winner + " ]" + " with the correct keyword is: " + keyword->keyword);
 						
 					}
 					if (users[i]->final_ans) {
 						message.append(",").append("Lost the game with score: " + to_string(users[i]->score));
+
 					}
+					cout << "Send to user: " << users[i]->name << "- Socket: " << users[i]->socket_id << "- Mess: " << message << endl;
 					send(users[i]->socket_id, message.c_str(), message.size(), 0);
 					if (game_end) {
 						start_new_game = true;
@@ -547,17 +568,18 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 					.append(",")
 					.append(response_message)
 					.append(",")
-					.append(users[i]->turn ? "Your turn" : "No turn")
-					.append(",");
+					.append(users[i]->turn ? "Your turn" : "No turn");
+
 				if (game_end) {
-					message.append("Congratulations to the winner [ " + winner + " ]" + " with the correct keyword is: " + keyword->keyword);
+					message.append(",").append("Congratulations to the winner [ " + winner + " ]" + " with the correct keyword is: " + keyword->keyword);
 				}
+				cout << "Send to user: " << users[i]->name <<"- Socket: "<< users[i]->socket_id << "- Mess: " << message << endl;
 				send(users[i]->socket_id, message.c_str(), message.size(), 0);
 			}
 		}
 		
-	}
-	start_receive_ans = true;
+	// }
+	
 }
 
 
@@ -578,12 +600,17 @@ string Server::isExistingUser(std::string name, int client_socket)
 		}
 	}
 
+
+
 	User* new_user = new User();
 	new_user->name = name;
 	new_user->score = 0;
 	new_user->socket_id = client_socket;
-
+	if (users.size() == 0) {
+		new_user->turn = true;
+	}
 	users.push_back(new_user);
+	
 	return "Registration Completed Successfully";
 }
 
