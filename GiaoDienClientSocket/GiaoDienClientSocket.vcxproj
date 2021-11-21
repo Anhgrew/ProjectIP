@@ -185,6 +185,7 @@
   <ItemGroup>
     <ClInclude Include="CCLientPlayGround.h" />
     <ClInclude Include="CConnectedSocket.h" />
+    <ClInclude Include="Client.h" />
     <ClInclude Include="CSummarize.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GiaoDienClientSocket.h" />
@@ -194,10 +195,12 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="ThreadFunc.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CCLientPlayGround.cpp" />
     <ClCompile Include="CConnectedSocket.cpp" />
+    <ClCompile Include="Client.cpp" />
     <ClCompile Include="CSummarize.cpp" />
     <ClCompile Include="GiaoDienClientSocket.cpp" />
     <ClCompile Include="GiaoDienClientSocketDlg.cpp" />
@@ -209,6 +212,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="ThreadFunc.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GiaoDienClientSocket.rc" />

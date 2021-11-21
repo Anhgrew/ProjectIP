@@ -13,6 +13,9 @@
 #include <cstring>
 #include <string>
 #include <iostream>
+#include "Client.h"
+#include "ThreadFunc.h"
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -87,7 +90,6 @@ END_MESSAGE_MAP()
 BOOL CGiaoDienClientSocketDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-
 	// Add "About..." menu item to system menu.
 
 	// IDM_ABOUTBOX must be in the system command range.
@@ -194,30 +196,37 @@ void CGiaoDienClientSocketDlg::OnBnClickedConnect()
 	// TODO: Add your control notification handler code here
 	txtIP.GetWindowText(mIpAddress);
 
+	Client* client = new Client();
+
 	std::string server_ip_string = CStringA(mIpAddress);
 	// Init socket
 
 	res = WSAStartup(MAKEWORD(2, 2), &w);
+	client->w = w;
 	if (res < 0)
 	{
 		MessageBox(_T("Cannot initialize listener socket lib"));
 	}
 	//Open a socket - listener
 	nSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
 	if (nSocket < 0)
 	{
 		MessageBox(_T("Cannot initialize listener socket"));
 	}
-
+	
 	srv.sin_family = AF_INET;
 	srv.sin_addr.s_addr = inet_addr(server_ip_string.c_str());
 	srv.sin_port = htons(PORT);
 	memset(&(srv.sin_zero), 0, 8);
 
+
+
 	u_long optval = 0;
 
 	res = ioctlsocket(nSocket, FIONBIO, &optval);
 	res = connect(nSocket, (struct sockaddr*)&srv, sizeof(srv));
+
 	if (res < 0)
 	{
 		MessageBox(_T("Cannot initialize connect socket server"));
@@ -225,6 +234,12 @@ void CGiaoDienClientSocketDlg::OnBnClickedConnect()
 	}
 	else {
 		char receive_buffer[256] = { 0 };
+		//
+
+		client->nSocket = nSocket;
+		client->srv = srv;
+		client->res = res;
+
 		recv(nSocket, receive_buffer, 255, 0);
 		if (string(receive_buffer).compare("full") == 0) {
 			MessageBox(_T("Full queue. Please wait"));
@@ -237,11 +252,11 @@ void CGiaoDienClientSocketDlg::OnBnClickedConnect()
 		}
 
 		int index = 0;
-
+		
 
 		GetDlgItem(IDC_UserName)->EnableWindow(TRUE);
 		GetDlgItem(BTN_REGISTER)->EnableWindow(TRUE);
-
+		
 
 		// Name input
 		/*CString name;
@@ -287,6 +302,9 @@ void CGiaoDienClientSocketDlg::OnBnClickedConnect()
 		*/
 		//MessageBox(textInput);
 		mClientSocket.SetSocketListener(this);
+
+		
+		
 	}
 }
 
@@ -348,6 +366,9 @@ void CGiaoDienClientSocketDlg::OnBnClickedRegister()
 		playground.nSocket = nSocket;
 		playground.srv = srv;
 		playground.index = index;
+
+		CWinThread* pThread = AfxBeginThread(recMessageThread, 0);
+
 		
 		playground.DoModal();
 

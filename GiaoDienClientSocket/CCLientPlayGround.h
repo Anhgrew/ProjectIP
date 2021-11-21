@@ -5,7 +5,7 @@
 #include <locale>
 #include <algorithm>
 #include <string>
-#include<winsock.h>
+#include<winsock2.h>
 #include <iostream>
 
 // CCLientPlayGround dialog
