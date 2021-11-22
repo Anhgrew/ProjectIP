@@ -13,7 +13,6 @@
 #include <cstring>
 #include <string>
 #include <iostream>
-#include "Client.h"
 #include "ThreadFunc.h"
 
 
@@ -42,6 +41,8 @@ public:
 // Implementation
 protected:
 	DECLARE_MESSAGE_MAP()
+public:
+//	afx_msg void OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized);
 };
 
 CAboutDlg::CAboutDlg() : CDialogEx(IDD_ABOUTBOX)
@@ -54,6 +55,7 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
+//	ON_WM_ACTIVATE()
 END_MESSAGE_MAP()
 
 
@@ -196,16 +198,19 @@ void CGiaoDienClientSocketDlg::OnBnClickedConnect()
 	// TODO: Add your control notification handler code here
 	txtIP.GetWindowText(mIpAddress);
 
-	Client* client = new Client();
+	client = new Client();
 
 	std::string server_ip_string = CStringA(mIpAddress);
 	// Init socket
 
 	res = WSAStartup(MAKEWORD(2, 2), &w);
-	client->w = w;
+	
 	if (res < 0)
 	{
 		MessageBox(_T("Cannot initialize listener socket lib"));
+	}
+	else {
+		client->w = w;
 	}
 	//Open a socket - listener
 	nSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -214,6 +219,7 @@ void CGiaoDienClientSocketDlg::OnBnClickedConnect()
 	{
 		MessageBox(_T("Cannot initialize listener socket"));
 	}
+
 	
 	srv.sin_family = AF_INET;
 	srv.sin_addr.s_addr = inet_addr(server_ip_string.c_str());
@@ -340,9 +346,10 @@ void CGiaoDienClientSocketDlg::OnBnClickedRegister()
 	CString name;
 	GetDlgItemText(IDC_UserName, name);
 	std::string name_string = CStringA(name);
+	string register_name = name_string.append(",").append("register");
 
 
-	send(nSocket, name_string.c_str(), 256, 0);
+	send(nSocket, register_name.c_str(), 256, 0);
 
 	if (recv(nSocket, receive_buffer, 256, 0) == -1) {
 		MessageBox(_T("No response"));
@@ -366,9 +373,10 @@ void CGiaoDienClientSocketDlg::OnBnClickedRegister()
 		playground.nSocket = nSocket;
 		playground.srv = srv;
 		playground.index = index;
+		playground.play_client = client;
 
-		CWinThread* pThread = AfxBeginThread(recMessageThread, 0);
-
+		
+		
 		
 		playground.DoModal();
 
@@ -389,3 +397,11 @@ void CGiaoDienClientSocketDlg::CloseAllButtons()
 	GetDlgItem(BTN_REGISTER)->EnableWindow(FALSE);
 	GetDlgItem(BTN_REFRESH)->EnableWindow(FALSE);
 }
+
+
+//void CAboutDlg::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
+//{
+//	CDialogEx::OnActivate(nState, pWndOther, bMinimized);
+//
+//	// TODO: Add your message handler code here
+//}

@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <string>
 #include<winsock2.h>
+#include"Client.h"
+
 #include <iostream>
 
 // CCLientPlayGround dialog
@@ -40,6 +42,10 @@ public:
 	std::wstring_convert<convert_t, wchar_t> strconverter;
 	std::vector< std::vector<std::string> > records;
 	std::vector<std::string> split(std::string s, std::string delimiter);
+
+
+
+
 	//
 
 	WSADATA w;
@@ -48,8 +54,11 @@ public:
 	sockaddr_in srv;
 	int index;
 
+
 	std::string disWord;
 	CEdit txtClientName;
+
+	Client* play_client;
 	afx_msg void OnBnClickedRefresh();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };

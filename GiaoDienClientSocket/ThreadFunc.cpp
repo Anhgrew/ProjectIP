@@ -8,10 +8,16 @@ Client client;
 
 UINT  recMessageThread(LPVOID lParam)
 {
+
 	while (1)
 	{
-		if (client.recMessagePort())
-			break;
+		if (client.recMessagePort() == -1) {
+			Sleep(500);
+		}
+		else {
+			
+		}
+			
 	}
 	return 0;
 }
