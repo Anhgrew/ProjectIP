@@ -23,6 +23,7 @@ public:
     int score = 0;
     bool turn = false;    // current turn
     int rank;
+    bool isReady = false;
   
 
     User(): id(current_id++) {}

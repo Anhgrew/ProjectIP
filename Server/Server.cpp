@@ -1,5 +1,5 @@
 #include "Server.h"
-using namespace std;
+
 
 
 void Server::initiateServer()
@@ -89,11 +89,11 @@ void Server::initiateServer()
 	int nMaxFd = socket_receiver + 1;
 
 	this->keyword = keyword_list[rand() % keyword_list.size()];
-	cout << "KEYWORD: " << this->keyword->keyword << endl;
+	std::cout << "KEYWORD: " << this->keyword->keyword << std::endl;
 	while (1) {
 		if (start_new_game || (five_turn_check == 5 && has_ans == false)) {
 			this->keyword = keyword_list[rand() % keyword_list.size()];
-			cout << "KEYWORD: " << this->keyword->keyword << endl;
+			std::cout << "KEYWORD: " << this->keyword->keyword << std::endl;
 		}
 		FD_ZERO(&fr);
 		FD_ZERO(&fw);
@@ -181,9 +181,11 @@ void Server::initiateServer()
 
 void Server:: ProcessNewMessage(int client_socket) {
 	
-	cout << "Process the new message for client socket: " << client_socket << endl;
+	std::cout << "Process the new message for client socket: " << client_socket << std::endl;
+	
 	char buffer[256] = { 0, };
 	int relIn = recv(client_socket, buffer, 256, 0);
+	std::cout << "User send to: " << std::string(buffer) << std::endl;
 	if (relIn == -1) {
 		
 		current_appearances--;
@@ -193,7 +195,7 @@ void Server:: ProcessNewMessage(int client_socket) {
 			start = false;
 		}
 
-		cout << "Failed to process new message something went wrong" << endl;
+		std::cout << "Failed to process new message something went wrong" << std::endl;
 		closesocket(client_socket);
 
 		for (int i = 0; i < users.size(); i++) {
@@ -211,41 +213,97 @@ void Server:: ProcessNewMessage(int client_socket) {
 		}
 	}
 	else {
-		if (users.size() < N) {
-			std::cout << "Message recieved from client " << buffer << endl;
-			std::string message = isExistingUser(buffer, client_socket);
+
+
+		std::vector<std::string> register_name = split(std::string(buffer), ",");
+
+		char* receive_mess_client = new char[register_name[0].length() + 1];
+		strcpy(receive_mess_client, register_name[0].c_str());
+		std::string typing = "";
+		if (register_name.size() > 1) {
+			 typing = register_name[1];
+		}
+		
+		//bool present = false;
+		//std::string failmess;
+		//for (auto user : users) {
+		//	if (user->socket_id == client_socket && !user->isReady && users.size() < N) {
+		//		user->isReady = true;
+		//		check = true;
+		//		failmess = std::to_string(keyword->keyword.size())
+		//			.append(",")
+		//			.append(keyword->description)
+		//			.append(",")
+		//			.append(std::to_string(user->id))
+		//			.append(",")
+		//			.append(user->name)
+		//			.append(",")
+		//			.append(std::to_string(user->score))
+		//			.append(",")
+		//			.append("Not start")
+		//			.append(",")
+		//			.append(user->turn ? "Your turn" : "No turn");
+		//		send(client_socket, failmess.c_str(), failmess.size(), 0);
+		//		break;
+		//	}
+		//}
+
+		if (users.size() < N && typing.compare("register") == 0) {
 			
+			std::cout << "Message recieved from client " << receive_mess_client << std::endl;
+			std::string message = isExistingUser(receive_mess_client, client_socket);
+			std::cout << "AAAA" << std::endl;
 
 			send(client_socket, message.c_str(), 70, 0);
 			for (int i = 0; i < users.size(); i++) {
 
 				if (users[i]->socket_id == client_socket) {
 					if (message.compare("Registration Completed Successfully") == 0) {
-						
-						string message = string("Let 's start")
+							std::string ms = std::string("Let 's start")
 							.append(",")
-							.append(to_string(keyword->keyword.size()))
+							.append(std::to_string(keyword->keyword.size()))
 							.append(",")
 							.append(keyword->description)
 							.append(",")
-							.append(to_string(users[i]->id))
+							.append(std::to_string(users[i]->id))
 							.append(",")
 							.append(users[i]->name)
 							.append(",")
-							.append(to_string(users[i]->score))
+							.append(std::to_string(users[i]->score))
 							.append(",")
 							.append(users[i]->turn ? "Your turn" : "No turn");
-						send(users[i]->socket_id, message.c_str(), message.size(), 0);
-						cout << "Return message: " << message << endl;
+						send(users[i]->socket_id, ms.c_str(), ms.size(), 0);
+						std::cout << "Return message: " << ms << std::endl;
 						break;
 					}
-					
+
 				}
 			}
-
 			
 
-			cout << endl << "**********************************";
+			std::cout << std::endl << "**********************************";
+		}
+		else if (users.size() < N && typing.compare("register") != 0) {
+			std::string failmess;
+			for (auto user : users) {
+				if (user->socket_id == client_socket) {
+					failmess = std::to_string(keyword->keyword.size())
+						.append(",")
+						.append(keyword->description)
+						.append(",")
+						.append(std::to_string(user->id))
+						.append(",")
+						.append(user->name)
+						.append(",")
+						.append(std::to_string(user->score))
+						.append(",")
+						.append("Not start")
+						.append(",")
+						.append("Your turn");
+					send(client_socket, failmess.c_str(), failmess.size(), 0);
+					break;
+				}
+			}
 		}
 		else if (users.size() == N || start) {
 			start = true;
@@ -316,7 +374,7 @@ void Server::ProcessNewRequest() {
 				{
 					if (clients[i] == 0) {
 						clients[i] = client_socket;
-						cout << " -------> " << client_socket << endl;
+						std::cout << " -------> " << client_socket << std::endl;
 						send(client_socket, "Got connected !!!\n", 18, 0);
 				
 						break;
@@ -337,7 +395,7 @@ void Server::ProcessNewRequest() {
 				{
 					if (clients[i] == 0) {
 						clients[i] = client_socket;
-						cout << " -------> " << client_socket << endl;
+						std::cout << " -------> " << client_socket << std::endl;
 						send(client_socket, "Got connected !!!\n", 18, 0);
 						break;
 					}
@@ -351,16 +409,16 @@ void Server::ProcessNewRequest() {
 			int len = sizeof(struct sockaddr);
 			int client_socket = accept(socket_receiver, NULL, &len);
 			closesocket(client_socket);
-			cout << "Users limit exceed, So we rejected socket: " << client_socket << endl;
+			std::cout << "Users limit exceed, So we rejected socket: " << client_socket << std::endl;
 		}
 
 
 	}
 	else if (FD_ISSET(socket_receiver, &fe)) {
-		cout << "Exception !" << endl;
+		std::cout << "Exception !" << std::endl;
 	}
 	else if (FD_ISSET(socket_receiver, &fw)) {
-		cout << "Ready to write !" << endl;
+		std::cout << "Ready to write !" << std::endl;
 	}
 	
 	for (int i = 0; i < N; i++)
@@ -377,11 +435,11 @@ void Server::ProcessNewRequest() {
 
 }
 
-vector<string> Server::split(string s, string delimiter)
+std::vector< std::string> Server::split(std::string s, std::string delimiter)
 {
-	vector<std::string> res;
+	std::vector<std::string> res;
 	int last = 0; int next = 0;
-	while ((next = s.find(delimiter, last)) != string::npos) {
+	while ((next = s.find(delimiter, last)) != std::string::npos) {
 		res.push_back(s.substr(last, next - last));
 		last = next + 1;
 	}
@@ -389,7 +447,7 @@ vector<string> Server::split(string s, string delimiter)
 	return res;
 }
 
-void Server::setKeyWordList(vector<Keyword*> keywords)
+void Server::setKeyWordList(std::vector<Keyword*> keywords)
 {
 	this->keyword_list = keywords;
 }
@@ -425,24 +483,30 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 	//	start_receive_ans = true;
 	//}
 	//else {
-		vector<string> ans = split(buffer, ",");
+		std::vector< std::string> ans = split(buffer, ",");
 		five_turn_check++;
-		string word_key = ans[0];
-		string word_guess = ans[1];
+		for (auto i : ans) {
+			std::cout << i << " - " <<  std::endl;
+		}
+		std::string word_guess;
+		if (ans.size() > 1) {
+			word_guess = ans[1];
+		}
+		std::string word_key = ans[0];
 		transform(word_key.begin(), word_key.end(), word_key.begin(), ::toupper);
 		transform(keyword->keyword.begin(), keyword->keyword.end(), keyword->keyword.begin(), ::toupper);
 		transform(word_guess.begin(), word_guess.end(), word_guess.begin(), ::toupper);
 
-		string response_message = "";
-		cout << "Keyword: " << word_key << endl;
-		cout << "Guess word: " << word_guess << "--------" << endl;
+		std::string response_message = "";
+		std::cout << "Keyword: " << word_key << std::endl;
+		std::cout << "Guess word: " << word_guess << "--------" << std::endl;
 
 		for (auto user : users) {
 			if (user->socket_id == client_socket) {
 				user->ans = word_key;
 				user->guess = word_guess;
 
-				if (word_key.compare("") == 0) {
+				if (word_key.compare("#") == 0) {
 					if (keyword->keyword.find(word_guess) != std::string::npos) {
 						response_message = "Correct guess";
 					}
@@ -501,15 +565,15 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 						game_end = true;
 					}
 
-					string message = to_string(keyword->keyword.size())
+					std::string message = std::to_string(keyword->keyword.size())
 						.append(",")
 						.append(keyword->description)
 						.append(",")
-						.append(to_string(users[i]->id))
+						.append(std::to_string(users[i]->id))
 						.append(",")
 						.append(users[i]->name)
 						.append(",")
-						.append(to_string(users[i]->score))
+						.append(std::to_string(users[i]->score))
 						.append(",")
 						.append(response_message)
 						.append(",")
@@ -520,10 +584,10 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 						
 					}
 					if (users[i]->final_ans) {
-						message.append(",").append("Lost the game with score: " + to_string(users[i]->score));
+						message.append(",").append("Lost the game with score: " + std::to_string(users[i]->score));
 
 					}
-					cout << "Send to user: " << users[i]->name << "- Socket: " << users[i]->socket_id << "- Mess: " << message << endl;
+					std::cout << "Send to user: " << users[i]->name << "- Socket: " << users[i]->socket_id << "- Mess: " << message << std::endl;
 					send(users[i]->socket_id, message.c_str(), message.size(), 0);
 					if (game_end) {
 						start_new_game = true;
@@ -556,15 +620,15 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 				//send(clients[i], keyword->description.c_str(), strlen(keyword->description.c_str()), 0);
 			}
 			else {
-				string message = to_string(keyword->keyword.size())
+				std::string message = std::to_string(keyword->keyword.size())
 					.append(",")
 					.append(keyword->description)
 					.append(",")
-					.append(to_string(users[i]->id))
+					.append(std::to_string(users[i]->id))
 					.append(",")
 					.append(users[i]->name)
 					.append(",")
-					.append(to_string(users[i]->score))
+					.append(std::to_string(users[i]->score))
 					.append(",")
 					.append(response_message)
 					.append(",")
@@ -573,7 +637,7 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 				if (game_end) {
 					message.append(",").append("Congratulations to the winner [ " + winner + " ]" + " with the correct keyword is: " + keyword->keyword);
 				}
-				cout << "Send to user: " << users[i]->name <<"- Socket: "<< users[i]->socket_id << "- Mess: " << message << endl;
+				std::cout << "Send to user: " << users[i]->name <<"- Socket: "<< users[i]->socket_id << "- Mess: " << message << std::endl;
 				send(users[i]->socket_id, message.c_str(), message.size(), 0);
 			}
 		}
@@ -588,7 +652,7 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 
 
 
-string Server::isExistingUser(std::string name, int client_socket)
+std::string Server::isExistingUser(std::string name, int client_socket)
 {
 	if (name.size() > 10) {
 		return "Name is longer than 10 character. Please input again !";

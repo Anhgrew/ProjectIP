@@ -8,6 +8,7 @@
 #include<string>
 #include<iostream>
 #include "CConnectedSocket.h"
+#include "Client.h"
 #include "IMySocketListener.h"
 #include<vector>
 #include <winsock2.h>
@@ -66,7 +67,7 @@ public:
 public:
 	afx_msg void OnBnClickedSend();
 	afx_msg void OnBnClickedConnect();
-
+	Client* client;
 	//implements
 	vector<string> split(string s, string delimiter);
 	virtual void OnAccepted(CString ipAddress, int port);
