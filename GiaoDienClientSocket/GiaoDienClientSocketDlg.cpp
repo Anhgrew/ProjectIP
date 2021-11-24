@@ -319,7 +319,7 @@ void CGiaoDienClientSocketDlg::OnAccepted(CString ipAdress, int port) { }
 vector<string> CGiaoDienClientSocketDlg::split(string s, string delimiter)
 	{
 	vector<std::string> res;
-	int last = 0; int next = 0;
+	size_t last = 0; size_t next = 0;
 	while ((next = s.find(delimiter, last)) != string::npos) {
 		res.push_back(s.substr(last, next - last));
 		last = next + 1;
@@ -362,7 +362,7 @@ void CGiaoDienClientSocketDlg::OnBnClickedRegister()
 		// Message
 		
 		MessageBox(_T("Registration Completed Successfully"));
-		int nRet = 3.0;
+		int nRet = 3;
 		// Send to new dialog if registrate success
 		EndDialog(nRet);
 		//LogNoti noti;

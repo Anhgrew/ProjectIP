@@ -23,8 +23,9 @@ User* Server::findNextUser(int index)
 	return next_user;
 }
 
-void Server::initiateServer()
-{
+
+void Server::initiateServer(){
+
 	// Initiate env
 	if (WSAStartup(MAKEWORD(2, 2), &ws) < 0) {
 		std::cout << std::endl << "The WSA failed !!!";
@@ -111,10 +112,12 @@ void Server::initiateServer()
 
 	this->keyword = keyword_list[rand() % keyword_list.size()];
 	std::cout << "KEYWORD: " << this->keyword->keyword << std::endl;
+	this->disword = std::string(this->keyword->keyword.length(), '*');
 	while (1) {
 		if (start_new_game || (five_turn_check == 5 && has_ans == false)) {
 			this->keyword = keyword_list[rand() % keyword_list.size()];
 			std::cout << "KEYWORD: " << this->keyword->keyword << std::endl;
+			this->disword = std::string(this->keyword->keyword.length(), '*');
 		}
 		FD_ZERO(&fr);
 		FD_ZERO(&fw);
@@ -150,7 +153,10 @@ void Server::initiateServer()
 	WSACleanup();
 }
 
+
+
 void Server::ProcessNewMessage(int client_socket) {
+	
 
 	std::cout << "Process the new message for client socket: " << client_socket << std::endl;
 
@@ -217,7 +223,11 @@ void Server::ProcessNewMessage(int client_socket) {
 							.append(",")
 							.append(std::to_string(users[i]->score))
 							.append(",")
-							.append(users[i]->turn ? "Your turn" : "No turn");
+							.append(users[i]->turn ? "Your turn" : "No turn")
+							.append(",")
+							.append(keyword->keyword)
+							.append(",")
+							.append(disword);
 						send(users[i]->socket_id, ms.c_str(), ms.size(), 0);
 						std::cout << "Return message: " << ms << std::endl;
 						break;
@@ -245,7 +255,11 @@ void Server::ProcessNewMessage(int client_socket) {
 						.append(",")
 						.append("Not start")
 						.append(",")
-						.append("Your turn");
+						.append("Your turn")
+						.append(",")
+						.append(keyword->keyword)
+						.append(",")
+						.append(disword);
 					send(client_socket, failmess.c_str(), failmess.size(), 0);
 					break;
 				}
@@ -408,6 +422,30 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 					User* next_user = findNextUser(i);
 
 					next_user->turn = true;
+					std::string message = std::to_string(keyword->keyword.size())
+						.append(",")
+						.append(keyword->description)
+						.append(",")
+						.append(std::to_string(users[i]->id))
+						.append(",")
+						.append(users[i]->name)
+						.append(",")
+						.append(std::to_string(users[i]->score))
+						.append(",")
+						.append(response_message)
+						.append(",")
+						.append(users[i]->turn ? "Your turn" : "No turn")
+						.append(",")
+						.append(keyword->keyword)
+						.append(",")
+						.append(disword);
+						
+					if (game_end) {
+						message.append(",").append("Congratulations to the winner [ " + winner + " ]" + " with the correct keyword is: " + keyword->keyword);
+						
+					}
+					if (users[i]->final_ans) {
+						message.append(",").append("Lost the game with score: " + std::to_string(users[i]->score));
 
 					std::cout << "Next User: " << next_user->id << next_user->name << std::endl;
 
