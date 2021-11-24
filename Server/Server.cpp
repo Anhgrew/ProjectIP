@@ -89,11 +89,21 @@ void Server::initiateServer()
 	int nMaxFd = socket_receiver + 1;
 
 	this->keyword = keyword_list[rand() % keyword_list.size()];
+<<<<<<< HEAD
 	std::cout << "KEYWORD: " << this->keyword->keyword << std::endl;
 	while (1) {
 		if (start_new_game || (five_turn_check == 5 && has_ans == false)) {
 			this->keyword = keyword_list[rand() % keyword_list.size()];
 			std::cout << "KEYWORD: " << this->keyword->keyword << std::endl;
+=======
+	cout << "KEYWORD: " << this->keyword->keyword << endl;
+	this->disword = std::string(this->keyword->keyword.length(), '*');
+	while (1) {
+		if (start_new_game || (five_turn_check == 5 && has_ans == false)) {
+			this->keyword = keyword_list[rand() % keyword_list.size()];
+			cout << "KEYWORD: " << this->keyword->keyword << endl;
+			this->disword = std::string(this->keyword->keyword.length(), '*');
+>>>>>>> f0034d6... update display hint
 		}
 		FD_ZERO(&fr);
 		FD_ZERO(&fw);
@@ -271,9 +281,19 @@ void Server:: ProcessNewMessage(int client_socket) {
 							.append(",")
 							.append(std::to_string(users[i]->score))
 							.append(",")
+<<<<<<< HEAD
 							.append(users[i]->turn ? "Your turn" : "No turn");
 						send(users[i]->socket_id, ms.c_str(), ms.size(), 0);
 						std::cout << "Return message: " << ms << std::endl;
+=======
+							.append(users[i]->turn ? "Your turn" : "No turn")
+							.append(",")
+							.append(keyword->keyword)
+							.append(",")
+							.append(disword);
+						send(users[i]->socket_id, message.c_str(), message.size(), 0);
+						cout << "Return message: " << message << endl;
+>>>>>>> f0034d6... update display hint
 						break;
 					}
 
