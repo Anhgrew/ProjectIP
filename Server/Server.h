@@ -30,7 +30,6 @@ public:
 	std::vector<User*> queue;
 	Keyword* keyword;
 	Keyword* hint;
-	std::string disword;
 	int PORT;
 	fd_set fr, fw, fe;
 	bool full = false;
