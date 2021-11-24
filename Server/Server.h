@@ -29,7 +29,8 @@ public:
 	bool has_ans = false;
 	std::vector<User*> queue;
 	Keyword* keyword;
-	Keyword* hint;
+	Keyword* hint; 
+	std::string disword;
 	int PORT;
 	fd_set fr, fw, fe;
 	bool full = false;

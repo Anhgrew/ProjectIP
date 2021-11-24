@@ -2,8 +2,7 @@
 
 
 
-void Server::initiateServer()
-{
+void Server::initiateServer(){
 	// Initiate env
 	if (WSAStartup(MAKEWORD(2, 2), &ws) < 0) {
 		std::cout << std::endl << "The WSA failed !!!";
@@ -90,10 +89,12 @@ void Server::initiateServer()
 
 	this->keyword = keyword_list[rand() % keyword_list.size()];
 	std::cout << "KEYWORD: " << this->keyword->keyword << std::endl;
+
 	while (1) {
 		if (start_new_game || (five_turn_check == 5 && has_ans == false)) {
 			this->keyword = keyword_list[rand() % keyword_list.size()];
 			std::cout << "KEYWORD: " << this->keyword->keyword << std::endl;
+			this->disword = std::string(this->keyword->keyword.length(), '*');
 		}
 		FD_ZERO(&fr);
 		FD_ZERO(&fw);
@@ -179,7 +180,7 @@ void Server::initiateServer()
 
 
 
-void Server:: ProcessNewMessage(int client_socket) {
+void Server::ProcessNewMessage(int client_socket) {
 	
 	std::cout << "Process the new message for client socket: " << client_socket << std::endl;
 	
@@ -271,7 +272,11 @@ void Server:: ProcessNewMessage(int client_socket) {
 							.append(",")
 							.append(std::to_string(users[i]->score))
 							.append(",")
-							.append(users[i]->turn ? "Your turn" : "No turn");
+							.append(users[i]->turn ? "Your turn" : "No turn")
+							.append(",")
+							.append(keyword->keyword)
+							.append(",")
+							.append(disword);;
 						send(users[i]->socket_id, ms.c_str(), ms.size(), 0);
 						std::cout << "Return message: " << ms << std::endl;
 						break;
