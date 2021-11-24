@@ -89,7 +89,7 @@ void Server::initiateServer(){
 
 	this->keyword = keyword_list[rand() % keyword_list.size()];
 	std::cout << "KEYWORD: " << this->keyword->keyword << std::endl;
-
+	this->disword = std::string(this->keyword->keyword.length(), '*');
 	while (1) {
 		if (start_new_game || (five_turn_check == 5 && has_ans == false)) {
 			this->keyword = keyword_list[rand() % keyword_list.size()];
@@ -276,7 +276,7 @@ void Server::ProcessNewMessage(int client_socket) {
 							.append(",")
 							.append(keyword->keyword)
 							.append(",")
-							.append(disword);;
+							.append(disword);
 						send(users[i]->socket_id, ms.c_str(), ms.size(), 0);
 						std::cout << "Return message: " << ms << std::endl;
 						break;
@@ -304,7 +304,11 @@ void Server::ProcessNewMessage(int client_socket) {
 						.append(",")
 						.append("Not start")
 						.append(",")
-						.append("Your turn");
+						.append("Your turn")
+						.append(",")
+						.append(keyword->keyword)
+						.append(",")
+						.append(disword);
 					send(client_socket, failmess.c_str(), failmess.size(), 0);
 					break;
 				}
@@ -582,7 +586,11 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 						.append(",")
 						.append(response_message)
 						.append(",")
-						.append(users[i]->turn ? "Your turn" : "No turn");
+						.append(users[i]->turn ? "Your turn" : "No turn")
+						.append(",")
+						.append(keyword->keyword)
+						.append(",")
+						.append(disword);
 						
 					if (game_end) {
 						message.append(",").append("Congratulations to the winner [ " + winner + " ]" + " with the correct keyword is: " + keyword->keyword);
