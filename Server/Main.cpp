@@ -21,7 +21,7 @@ int main()
 
 
 	int PORT = 9090;
-	int N = 2;
+	int N = 3;
 
 	SOCKET socket_receiver = INVALID_SOCKET;
 	int current_appearances = 0;
