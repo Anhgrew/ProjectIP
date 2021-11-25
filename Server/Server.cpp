@@ -463,6 +463,14 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 				else if (i <= users.size() - 1 && response_message.compare("Correct guess") == 0) {
 					users[i]->score += 1;
 					users[i]->status = "Correct guess";
+					if (disword.compare(keyword->keyword) == 0) {
+						response_message = "Correct keyword";
+						has_ans = true;
+						winner = users[i]->name;
+						users[i]->score += 5;
+						users[i]->status = "Correct keyword";
+						game_end = true;
+					}
 				}
 				else if (i <= users.size() - 1 && response_message.compare("Correct keyword") == 0) {
 					winner = users[i]->name;

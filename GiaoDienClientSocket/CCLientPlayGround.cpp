@@ -262,11 +262,11 @@ UINT CCLientPlayGround::threadHandle()
 		
 		res = split(receive_buffer, ",");
 
-		if (res.size() >= 9) {
-			if (res[7].compare("") != 0 && res[7].find("Lost") != std::string::npos) {
+		if (res.size() >= 10) {
+			if (res[9].compare("") != 0 && res[9].find("Lost") != std::string::npos) {
 				MessageBox(_T("You lost"));
 			}
-			else if (res[7].compare("") != 0 && res[7].find("Congratulations") != std::string::npos) {
+			else if (res[9].compare("") != 0 && res[9].find("Congratulations") != std::string::npos) {
 				MessageBox(_T("Congratulations, you are the winner"));
 			}
 			else if (res[5].compare("") != 0 && res[5].compare("Correct guess") == 0) {
@@ -343,9 +343,9 @@ UINT CCLientPlayGround::threadHandle()
 			}
 
 		}
-		else {
+		/*else {
 			MessageBox(_T("Please"));
-		}
+		}*/
 
 		memset(receive_buffer, 0, sizeof receive_buffer);
 		
