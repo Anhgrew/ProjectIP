@@ -78,7 +78,7 @@ BOOL CCLientPlayGround::OnInitDialog() {
 		//CString str;
 		//str.Format(_T("Hi %d"), res.size());
 		//MessageBoxW(str);
-		if (res.size() > 8 && res[0].compare("Let 's start") == 0 && res[6].compare("Your turn") == 0) {
+		if (res.size() >= 9 && res[0].compare("Let 's start") == 0 && res[6].compare("Your turn") == 0) {
 			GetDlgItem(IDC_SENDANSWER)->EnableWindow(TRUE);
 			listPlayGround.AddString(CString("HINT: ") + (LPCTSTR)strconverter.from_bytes(res[2]).c_str());
 			disWord = res[8];
@@ -88,6 +88,12 @@ BOOL CCLientPlayGround::OnInitDialog() {
 		}
 		else {
 			GetDlgItem(IDC_SENDANSWER)->EnableWindow(FALSE);
+			listPlayGround.AddString(CString("HINT: ") + (LPCTSTR)strconverter.from_bytes(res[2]).c_str());
+			disWord = res[8];
+			HiddenRemain("", res[7], msg, disWord);
+			listPlayGround.AddString(CString("KEYWORD: ") + disWord.c_str());
+			listPlayGround.SetCurSel(listPlayGround.GetCount() - 1);
+
 			MessageBox(_T("Please wait for your turn..."));
 		}
 
@@ -264,10 +270,16 @@ UINT CCLientPlayGround::threadHandle()
 
 		if (res.size() >= 10) {
 			if (res[9].compare("") != 0 && res[9].find("Lost") != std::string::npos) {
+				listPlayGround.AddString(CString("KEYWORD: ") + disWord.c_str());
+				listPlayGround.SetCurSel(listPlayGround.GetCount() - 1);
 				MessageBox(_T("You lost"));
 			}
 			else if (res[9].compare("") != 0 && res[9].find("Congratulations") != std::string::npos) {
+
+				listPlayGround.AddString(CString("KEYWORD: ") + disWord.c_str());
+				listPlayGround.SetCurSel(listPlayGround.GetCount() - 1);
 				MessageBox(_T("Congratulations, you are the winner"));
+
 			}
 			else if (res[5].compare("") != 0 && res[5].compare("Correct guess") == 0) {
 				MessageBox(_T("Correct guess"));
@@ -304,7 +316,7 @@ UINT CCLientPlayGround::threadHandle()
 			}
 
 		}
-		if (res.size() < 9 && res.size() >= 7) {
+		if (res.size() < 10 && res.size() >= 7) {
 			if (res[5].compare("") != 0 && res[5].compare("Correct guess") == 0) {
 				MessageBox(_T("Correct guess"));
 				std::string gW = CT2A(guessW);
@@ -315,9 +327,9 @@ UINT CCLientPlayGround::threadHandle()
 				HiddenRemain(gW, res[7], msg, disWord);
 
 				// Display on list chat result
-				listPlayGround.AddString((LPCTSTR)strconverter.from_bytes(msg).c_str());
-				listPlayGround.AddString(CString("KEYWORD: ") + disWord.c_str());
-				listPlayGround.SetCurSel(listPlayGround.GetCount() - 1);
+				//listPlayGround.AddString((LPCTSTR)strconverter.from_bytes(msg).c_str());
+				//listPlayGround.AddString(CString("KEYWORD: ") + disWord.c_str());
+				//listPlayGround.SetCurSel(listPlayGround.GetCount() - 1);
 			}
 			else if (res[5].compare("") != 0 && res[5].compare("Wrong guess") == 0) {
 				MessageBox(_T("Wrong guess"));
@@ -343,9 +355,9 @@ UINT CCLientPlayGround::threadHandle()
 			}
 
 		}
-		/*else {
-			MessageBox(_T("Please"));
-		}*/
+		listPlayGround.AddString((LPCTSTR)strconverter.from_bytes(msg).c_str());
+		listPlayGround.AddString(CString("KEYWORD: ") + disWord.c_str());
+		listPlayGround.SetCurSel(listPlayGround.GetCount() - 1);
 
 		memset(receive_buffer, 0, sizeof receive_buffer);
 		

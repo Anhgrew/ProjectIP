@@ -430,7 +430,7 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 						users[i]->status = "Wrong guess";
 					}
 
-					for (int j = 0; j < users.size(); j++) {
+				/*	for (int j = 0; j < users.size(); j++) {
 						if (users[j]->socket_id != client_socket) {
 							std::string message = std::to_string(keyword->keyword.size())
 								.append(",")
@@ -457,7 +457,7 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 							send(users[j]->socket_id, message.c_str(), message.size(), 0);
 						}
 					}
-		
+		*/
 
 				}
 				else if (i <= users.size() - 1 && response_message.compare("Correct guess") == 0) {
@@ -506,6 +506,34 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 
 				}
 				std::cout << "Send to user: " << users[i]->name << "- Socket: " << users[i]->socket_id << "- Mess: " << message << std::endl;
+
+				for (int j = 0; j < users.size(); j++) {
+					if (users[j]->socket_id != client_socket) {
+						std::string message = std::to_string(keyword->keyword.size())
+							.append(",")
+							.append(keyword->description)
+							.append(",")
+							.append(std::to_string(users[j]->id))
+							.append(",")
+							.append(users[j]->name)
+							.append(",")
+							.append(std::to_string(users[j]->score))
+							.append(",")
+							.append(response_message)
+							.append(",")
+							.append(users[j]->turn ? "Your turn" : "No turn")
+							.append(",")
+							.append(keyword->keyword)
+							.append(",")
+							.append(disword);
+
+						if (game_end) {
+							message.append(",").append("Congratulations to the winner [ " + winner + " ]" + " with the correct keyword is: " + keyword->keyword);
+						}
+						std::cout << "Send to user: " << users[j]->name << "- Socket: " << users[j]->socket_id << "- Mess: " << message << std::endl;
+						send(users[j]->socket_id, message.c_str(), message.size(), 0);
+					}
+				}
 				send(users[i]->socket_id, message.c_str(), message.size(), 0);
 				if (game_end) {
 					start_new_game = true;
