@@ -2,9 +2,6 @@
 
 
 
-<<<<<<< HEAD
-void Server::initiateServer(){
-=======
 User* Server::findNextUser(int index)
 {
 	int i = index;
@@ -28,7 +25,6 @@ User* Server::findNextUser(int index)
 
 void Server::initiateServer()
 {
->>>>>>> d7f74d4509f41bcb0bb5d492fae541fdc44709da
 	// Initiate env
 	if (WSAStartup(MAKEWORD(2, 2), &ws) < 0) {
 		std::cout << std::endl << "The WSA failed !!!";
@@ -156,63 +152,8 @@ void Server::initiateServer()
 	WSACleanup();
 }
 
-<<<<<<< HEAD
-//int Server::ProcessNewMessage(int client_socket)
-//{
-//	std::cout << "Process the new message for client socket: " << " [" <<client_socket << "]" <<std::endl;
-//	char buffer[256] = { 0, };
-//	int relIn;
-//
-//	bool check = false;
-//
-//
-//
-//	relIn = recv(client_socket, buffer, 256, 0);
-//	std::cout << buffer << std::endl;
-//	if (relIn == -1) return -1;
-//	std::string return_message = isExistingUser(buffer);
-//	if (return_message.compare("") !=0 && return_message.compare("Registration Completed Successfully") == 0) {
-//		User* user = new User(buffer, 0);
-//		user->socket_id = client_socket;
-//		users.push_back(user);
-//		send(client_socket, "Success !", 10, 0);
-//
-//	}
-//	else if (return_message.compare("") != 0 && isExistingUser(buffer).compare("Name is too long !") == 0) {
-//		send(client_socket, "Please chose the shorter name !", 31, 0);
-//	}
-//	else {
-//		send(client_socket, "Please chose the another name !", 32, 0);
-//	}
-//
-//	if (recv(client_socket, buffer, 256, 0) == 0) {
-//		current_appearances--;
-//		// When number of socket == 0 reset server 
-//		if (current_appearances == 0) full = false;
-//		std::cout << "Failed to process new message something went wrong" << std::endl;
-//		closesocket(client_socket);
-//		for (int i = 0; i < N; i++) {
-//			if (clients[i] == client_socket) {
-//				clients[i] = 0;
-//				break;
-//			}
-//		}
-//	}
-//	else {
-//		std::cout << "Message recieved from client " << buffer << std::endl;
-//		send(client_socket, "Proceed your request, server send back", 39, 0);
-//	}
-//
-//}
-
-
-
-void Server::ProcessNewMessage(int client_socket) {
-	
-=======
 void Server::ProcessNewMessage(int client_socket) {
 
->>>>>>> d7f74d4509f41bcb0bb5d492fae541fdc44709da
 	std::cout << "Process the new message for client socket: " << client_socket << std::endl;
 
 	char buffer[256] = { 0, };
@@ -465,32 +406,6 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 	}
 
 
-<<<<<<< HEAD
-					std::string message = std::to_string(keyword->keyword.size())
-						.append(",")
-						.append(keyword->description)
-						.append(",")
-						.append(std::to_string(users[i]->id))
-						.append(",")
-						.append(users[i]->name)
-						.append(",")
-						.append(std::to_string(users[i]->score))
-						.append(",")
-						.append(response_message)
-						.append(",")
-						.append(users[i]->turn ? "Your turn" : "No turn")
-						.append(",")
-						.append(keyword->keyword)
-						.append(",")
-						.append(disword);
-						
-					if (game_end) {
-						message.append(",").append("Congratulations to the winner [ " + winner + " ]" + " with the correct keyword is: " + keyword->keyword);
-						
-					}
-					if (users[i]->final_ans) {
-						message.append(",").append("Lost the game with score: " + std::to_string(users[i]->score));
-=======
 	for (int i = 0; i < users.size(); i++)
 	{
 
@@ -503,7 +418,6 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 					User* next_user = findNextUser(i);
 
 					next_user->turn = true;
->>>>>>> d7f74d4509f41bcb0bb5d492fae541fdc44709da
 
 					std::cout << "Next User: " << next_user->id << next_user->name << std::endl;
 
@@ -553,26 +467,30 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 					game_end = true;
 				}
 
-				std::string message = std::to_string(keyword->keyword.size())
-					.append(",")
-					.append(keyword->description)
-					.append(",")
-					.append(std::to_string(users[i]->id))
-					.append(",")
-					.append(users[i]->name)
-					.append(",")
-					.append(std::to_string(users[i]->score))
-					.append(",")
-					.append(response_message)
-					.append(",")
-					.append(users[i]->turn ? "Your turn" : "No turn");
-
-				if (game_end) {
-					message.append(",").append("Congratulations to the winner [ " + winner + " ]" + " with the correct keyword is: " + keyword->keyword);
-
-				}
-				if (users[i]->final_ans) {
-					message.append(",").append("Lost the game with score: " + std::to_string(users[i]->score));
+					std::string message = std::to_string(keyword->keyword.size())
+						.append(",")
+						.append(keyword->description)
+						.append(",")
+						.append(std::to_string(users[i]->id))
+						.append(",")
+						.append(users[i]->name)
+						.append(",")
+						.append(std::to_string(users[i]->score))
+						.append(",")
+						.append(response_message)
+						.append(",")
+						.append(users[i]->turn ? "Your turn" : "No turn")
+						.append(",")
+						.append(keyword->keyword)
+						.append(",")
+						.append(disword);
+						
+					if (game_end) {
+						message.append(",").append("Congratulations to the winner [ " + winner + " ]" + " with the correct keyword is: " + keyword->keyword);
+						
+					}
+					if (users[i]->final_ans) {
+						message.append(",").append("Lost the game with score: " + std::to_string(users[i]->score));
 
 				}
 				std::cout << "Send to user: " << users[i]->name << "- Socket: " << users[i]->socket_id << "- Mess: " << message << std::endl;
