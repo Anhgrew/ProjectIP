@@ -1,6 +1,6 @@
 #include "Server.h"
 
-
+void UpdateDisplayWord(std::string& disWord, std::string guessWord, std::string keyword);
 
 User* Server::findNextUser(int index)
 {
@@ -232,7 +232,6 @@ void Server::ProcessNewMessage(int client_socket) {
 				}
 			}
 
-
 			std::cout << std::endl << "<________________________________________________________>";
 		}
 		else if (users.size() < N && typing.compare("register") != 0) {
@@ -386,6 +385,8 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 			if (word_key.compare("#") == 0) {
 				if (keyword->keyword.find(word_guess) != std::string::npos) {
 					response_message = "Correct guess";
+					//update disword
+					UpdateDisplayWord(disword, word_guess, keyword->keyword);
 				}
 				else {
 					response_message = "Wrong guess";
@@ -408,7 +409,6 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 
 	for (int i = 0; i < users.size(); i++)
 	{
-
 		if (users[i] != NULL && users[i]->socket_id != 0 && users[i]->socket_id == client_socket) {
 
 			if (users[i]->turn) {
@@ -444,7 +444,11 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 								.append(",")
 								.append(response_message)
 								.append(",")
-								.append(users[j]->turn ? "Your turn" : "No turn");
+								.append(users[j]->turn ? "Your turn" : "No turn")
+								.append(",")
+								.append(keyword->keyword)
+								.append(",")
+								.append(disword);
 
 							if (game_end) {
 								message.append(",").append("Congratulations to the winner [ " + winner + " ]" + " with the correct keyword is: " + keyword->keyword);
@@ -508,7 +512,23 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 
 
 
+void UpdateDisplayWord(std::string& disWord, std::string guessWord, std::string keyWord) {
+	std::vector<size_t> positions;
+	size_t pos = keyWord.find(guessWord, 0);
+	size_t spc = keyWord.find(" ", 0);
 
+	if (guessWord != "") {
+		while (pos != std::string::npos) {
+			positions.push_back(pos);
+			disWord.replace(pos, 1, guessWord);
+			pos = keyWord.find(guessWord, pos + 1);
+		}
+	}
+	while (spc != std::string::npos) {
+		disWord.replace(spc, 1, " ");
+		spc = keyWord.find(" ", spc + 1);
+	}
+}
 
 
 
