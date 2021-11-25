@@ -54,7 +54,7 @@ public:
 	}
 
 
-
+	User* findNextUser(int index);
 	void initiateServer();
 
 	void setKeyWordList(std::vector<Keyword*> keywords);

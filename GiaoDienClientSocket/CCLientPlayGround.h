@@ -48,7 +48,9 @@ public:
 	std::vector<std::string> split(std::string s, std::string delimiter);
 
 
-
+	CString responseMsg;
+	CString guessW;
+	CString keyW;
 
 	//
 
@@ -58,6 +60,12 @@ public:
 	sockaddr_in srv;
 	int index;
 
+	//
+	HANDLE handle;
+	CWinThread* thread;
+
+	static UINT __cdecl staticThreadHandle(LPVOID pParam);
+	UINT threadHandle();
 
 	std::string disWord;
 	CEdit txtClientName;

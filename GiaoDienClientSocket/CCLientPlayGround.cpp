@@ -7,14 +7,17 @@
 #include "CCLientPlayGround.h"
 #include <windows.h>
 #include "LogNoti.h"
+<<<<<<< HEAD
 #include "afxdialogex.h"
 #include <thread>
 
+=======
+>>>>>>> d7f74d4509f41bcb0bb5d492fae541fdc44709da
 void HiddenRemain(std::string guessWord, std::string& keyWord, std::string& msg, std::string& disWord);
 // CCLientPlayGround dialog
 
 IMPLEMENT_DYNAMIC(CCLientPlayGround, CDialogEx)
-HANDLE refreshThread;
+// HANDLE refreshThread;
 
 //BOOL stopNow = FALSE;
 //Client* play_client2;
@@ -115,7 +118,7 @@ CCLientPlayGround::CCLientPlayGround(CWnd* pParent /*=nullptr*/)
 
 CCLientPlayGround::~CCLientPlayGround()
 {
-	
+
 }
 
 void CCLientPlayGround::DoDataExchange(CDataExchange* pDX)
@@ -163,16 +166,19 @@ BOOL CCLientPlayGround::OnInitDialog() {
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);
 	// Init if required, can add later
+
+
+
 	UpdateData(TRUE);
 
-	SetTimer(1234, 1000, 0);
+	// SetTimer(1234, 1000, 0);
 
 	// play_client2 = play_client;
 
 	/*CWinThread* pThread;
 
 	pThread = AfxBeginThread(reciveMessThread, k);*/
-	
+
 	// std::thread task(processRev, tmp);
 	// task.join();	
 	GetDlgItem(IDC_SENDANSWER)->EnableWindow(FALSE);
@@ -197,7 +203,7 @@ BOOL CCLientPlayGround::OnInitDialog() {
 			listPlayGround.AddString(CString("KEYWORD: ") + disWord.c_str());
 			listPlayGround.SetCurSel(listPlayGround.GetCount() - 1);
 		}
-		else {	
+		else {
 			GetDlgItem(IDC_SENDANSWER)->EnableWindow(FALSE);
 			MessageBox(_T("Please wait for your turn..."));
 		}
@@ -208,7 +214,7 @@ BOOL CCLientPlayGround::OnInitDialog() {
 
 	txtKeyWord.SetReadOnly(FALSE);
 
-	
+
 
 	CString name;
 	name = res[4].c_str();
@@ -216,13 +222,16 @@ BOOL CCLientPlayGround::OnInitDialog() {
 	CString score;
 	score = res[5].c_str();
 	txtScore.SetWindowTextW(score);
-	
-	CString kk = _T("");
-	
+
+	//CString kk = _T("");
+
 	/*SetTimer(1, 2000000, NULL);*/
 	//string m = play_client->receive_message;
 	//MessageBox(kk);
 	UpdateData(FALSE);
+
+	thread = AfxBeginThread(staticThreadHandle, this);
+	handle = thread->m_hThread;
 
 	return TRUE;
 }
@@ -281,9 +290,6 @@ HCURSOR CCLientPlayGround::OnQueryDragIcon()
 void CCLientPlayGround::OnBnClickedSendanswer()
 {
 	UpdateData(TRUE);
-	CString responseMsg;
-	CString guessW;
-	CString keyW;
 
 	txtGuessWord.GetWindowTextW(guessW);
 	txtKeyWord.GetWindowTextW(keyW);
@@ -293,21 +299,22 @@ void CCLientPlayGround::OnBnClickedSendanswer()
 	if (guessW == _T("")) {
 		guessW = string("#").c_str();
 	}
-	
+
 
 	responseMsg = keyW + "," + guessW;
 
-	char receive_buffer[256];
-	memset(receive_buffer, 0, sizeof receive_buffer);
+	//char receive_buffer[256];
+	//memset(receive_buffer, 0, sizeof receive_buffer);
 
-	std::vector<std::string> res;
+	//std::vector<std::string> res;
 
-	index = 0;
+	//index = 0;
 
-	GetDlgItem(IDC_SENDANSWER)->EnableWindow(TRUE);
-		
+	//GetDlgItem(IDC_SENDANSWER)->EnableWindow(TRUE);
+	//	
 	send(nSocket, CStringA(responseMsg), 256, 0);
 
+<<<<<<< HEAD
 	if (recv(nSocket, receive_buffer, 256, 0) == -1) {
 		MessageBox(_T("Can not send answer"));
 	}
@@ -408,41 +415,121 @@ void CCLientPlayGround::OnBnClickedSendanswer()
 	//else {
 	//	GetDlgItem(IDC_SENDANSWER)->EnableWindow(FALSE);
 	//	MessageBox(_T("Please wait for your turn..."));
+=======
+	//if (recv(nSocket, receive_buffer, 256, 0) == -1) {
+	//	MessageBox(_T("Can not send answer"));
+>>>>>>> d7f74d4509f41bcb0bb5d492fae541fdc44709da
 	//}
-	
+	//else {
+	//	res = split(receive_buffer, ",");
+
+	//	if (res.size() >= 8) {
+	//		if (res[7].compare("") != 0 && res[7].find("Lost") != std::string::npos) {
+	//			MessageBox(_T("You lost"));
+
+	//		}
+	//		else if (res[7].compare("") != 0 && res[7].find("Congratulations") != std::string::npos) {
+	//			MessageBox(_T("Congratulations, you are the winner"));
+	//		}
+	//		else if (res[5].compare("") != 0 && res[5].compare("Correct guess") == 0) {
+	//			MessageBox(_T("Correct guess"));
+	//		}
+	//		else if (res[5].compare("") != 0 && res[5].compare("Wrong guess") == 0) {
+	//			MessageBox(_T("Wrong guess"));
+	//		}
 
 
-	//if (turn.compare("Your turn") == 0) {
-	//	std::cout << "Input:" << std::endl;
-	//	/*getline(std::cin, send_buffer);
-	//	send_buffer.append(",").append("1");
-	//	send(nSocket, send_buffer.c_str(), 256, 0);
-	//	cout << "Sended.." << endl;*/
+	//		CString name;
+	//		name = res[3].c_str();
+	//		txtClientName.SetWindowText(name);
+
+	//		CString score = _T("");;
+	//		score = res[4].c_str();
+	//		txtScore.SetWindowTextW(score);
+	//		CString messTmp = _T("");
+	//		messTmp = res[6].c_str();
+	//		MessageBox(messTmp);
+	//		if (res[6].compare("Your turn") == 0) {
+	//			GetDlgItem(IDC_SENDANSWER)->EnableWindow(TRUE);
+	//		}
+	//		else {
+	//			GetDlgItem(IDC_SENDANSWER)->EnableWindow(FALSE);
+	//		}
+	//		
+	//	}
+	//	if(res.size() < 8 && res.size() >= 6) {
+	//		if (res[5].compare("") != 0 && res[5].compare("Correct guess") == 0) {
+	//		MessageBox(_T("Correct guess"));
+	//		}
+	//		else if (res[5].compare("") != 0 && res[5].compare("Wrong guess") == 0) {
+	//		MessageBox(_T("Wrong guess"));
+	//		}
+	//		else if (res[5].compare("") != 0 && res[5].compare("Not start") == 0) {
+	//			MessageBox(_T("Please wait for game start"));
+	//		}
+
+	//		// hinh nhu correct thi moi can chay khuc duoi dien vo list
+	//		CString name;
+	//		name = res[3].c_str();
+	//		txtClientName.SetWindowText(name);
+
+	//		CString score = _T("");;
+	//		score = res[4].c_str();
+	//		txtScore.SetWindowTextW(score);
+
+	//		CString messTmp = _T("");
+	//		messTmp = res[6].c_str();
+	//		if (res[6].compare("Your turn") == 0) {
+	//			GetDlgItem(IDC_SENDANSWER)->EnableWindow(TRUE);
+	//		}
+	//		else {
+	//			GetDlgItem(IDC_SENDANSWER)->EnableWindow(FALSE);
+	//		}
+
+	//	}
+	//	else {
+	//		MessageBox(_T("Please wait for game start"));
+	//	}
+	//			
 	//}
+	////else {
+	////	GetDlgItem(IDC_SENDANSWER)->EnableWindow(FALSE);
+	////	MessageBox(_T("Please wait for your turn..."));
+	////}
+	//
 
-	/*else {
-		if (res.size() >= 8 && res[7] != "" && res[7].find("Lost") != std::string::npos) {
-			cout << "Wait..." << endl;
-			break;
-		}
-		if (res.size() >= 8 && res[7] != "" && res[7].find("Congratulations") != std::string::npos) {
-			cout << "~~~ You win. End game ~~~" << endl;
-			break;
-		}
-	}*/
 
-	// TODO: Add your control notification handler code here
-	
+	////if (turn.compare("Your turn") == 0) {
+	////	std::cout << "Input:" << std::endl;
+	////	/*getline(std::cin, send_buffer);
+	////	send_buffer.append(",").append("1");
+	////	send(nSocket, send_buffer.c_str(), 256, 0);
+	////	cout << "Sended.." << endl;*/
+	////}
 
-	//Send response to Server, with format: keyword,guessword
-	
-	//CT2A buff(responseMsg, CP_UTF8);
-	//->send to server
+	///*else {
+	//	if (res.size() >= 8 && res[7] != "" && res[7].find("Lost") != std::string::npos) {
+	//		cout << "Wait..." << endl;
+	//		break;
+	//	}
+	//	if (res.size() >= 8 && res[7] != "" && res[7].find("Congratulations") != std::string::npos) {
+	//		cout << "~~~ You win. End game ~~~" << endl;
+	//		break;
+	//	}
+	//}*/
 
-	txtGuessWord.SetWindowTextW(_T(""));
-	txtKeyWord.SetWindowTextW(_T(""));
+	//// TODO: Add your control notification handler code here
+	//
 
-	//Receive from Server
+	////Send response to Server, with format: keyword,guessword
+	//
+	////CT2A buff(responseMsg, CP_UTF8);
+	////->send to server
+
+	//txtGuessWord.SetWindowTextW(_T(""));
+	//txtKeyWord.SetWindowTextW(_T(""));
+
+	////Receive from Server
 
 	//std::string gW = CT2A(guessW);
 	//std::string kW = CT2A(keyW);
@@ -453,6 +540,7 @@ void CCLientPlayGround::OnBnClickedSendanswer()
 	//listPlayGround.AddString(CString("The Remain words: ") + disWord.c_str());
 	//listPlayGround.SetCurSel(listPlayGround.GetCount() - 1);
 
+<<<<<<< HEAD
 	//// Show Score
 	//int score = 10;
 	//CString sc;
@@ -461,6 +549,17 @@ void CCLientPlayGround::OnBnClickedSendanswer()
 
 	//Handle when user make wrong guess word/wrong keyword
 	UpdateData(TRUE);
+=======
+	////// Show Score
+	////int score = 10;
+	////CString sc;
+	////sc.Format(_T("%d"), score);
+	////txtScore.SetWindowTextW(sc);
+
+	////Handle when user make wrong guess word/wrong keyword
+	//UpdateData(TRUE);
+	UpdateData(FALSE);
+>>>>>>> d7f74d4509f41bcb0bb5d492fae541fdc44709da
 }
 
 std::vector<std::string> CCLientPlayGround::split(std::string s, std::string delimiter)
@@ -512,76 +611,233 @@ void HiddenRemain(std::string guessWord, std::string& keyWord, std::string& msg,
 
 
 
+UINT __cdecl CCLientPlayGround::staticThreadHandle(LPVOID pParam)
+{
+	CCLientPlayGround* play_ground = reinterpret_cast<CCLientPlayGround*>(pParam);
+	UINT return_code = play_ground->threadHandle();
+	return return_code != 0 ? return_code : 0;
+}
+
+UINT CCLientPlayGround::threadHandle()
+{
+
+	char receive_buffer[256];
+	std::vector<std::string> res;
+	memset(receive_buffer, 0, sizeof receive_buffer);
+	
+
+	while (recv(nSocket, receive_buffer, 256, 0) != SOCKET_ERROR)
+	{
+		
+		res = split(receive_buffer, ",");
+
+		if (res.size() >= 8) {
+			if (res[7].compare("") != 0 && res[7].find("Lost") != std::string::npos) {
+				MessageBox(_T("You lost"));
+			}
+			else if (res[7].compare("") != 0 && res[7].find("Congratulations") != std::string::npos) {
+				MessageBox(_T("Congratulations, you are the winner"));
+			}
+			else if (res[5].compare("") != 0 && res[5].compare("Correct guess") == 0) {
+				MessageBox(_T("Correct guess"));
+			}
+			else if (res[5].compare("") != 0 && res[5].compare("Wrong guess") == 0) {
+				MessageBox(_T("Wrong guess"));
+			}
+
+
+			CString name;
+			name = res[3].c_str();
+			txtClientName.SetWindowText(name);
+
+			CString score = _T("");;
+			score = res[4].c_str();
+			txtScore.SetWindowTextW(score);
+
+			if (res[6].compare("Your turn") == 0) {
+				GetDlgItem(IDC_SENDANSWER)->EnableWindow(TRUE);
+			}
+			else {
+				GetDlgItem(IDC_SENDANSWER)->EnableWindow(FALSE);
+			}
+
+		}
+		if (res.size() < 8 && res.size() >= 6) {
+			if (res[5].compare("") != 0 && res[5].compare("Correct guess") == 0) {
+				MessageBox(_T("Correct guess"));
+			}
+			else if (res[5].compare("") != 0 && res[5].compare("Wrong guess") == 0) {
+				MessageBox(_T("Wrong guess"));
+			}
+			else if (res[5].compare("") != 0 && res[5].compare("Not start") == 0) {
+				MessageBox(_T("Please wait for game starting"));
+			}
+
+			// hinh nhu correct thi moi can chay khuc duoi dien vo list
+			CString name;
+			name = res[3].c_str();
+			txtClientName.SetWindowText(name);
+
+			CString score = _T("");;
+			score = res[4].c_str();
+			txtScore.SetWindowTextW(score);
+
+			if (res[6].compare("Your turn") == 0) {
+				GetDlgItem(IDC_SENDANSWER)->EnableWindow(TRUE);
+			}
+			else {
+				GetDlgItem(IDC_SENDANSWER)->EnableWindow(FALSE);
+			}
+
+		}
+		else {
+			MessageBox(_T("Please"));
+		}
+
+		memset(receive_buffer, 0, sizeof receive_buffer);
+		
+	}
+
+	return 0;
+}
 void CCLientPlayGround::OnBnClickedRefresh()
 {
 	char receive_buffer[256] = { 0, };
 	std::vector<std::string> res;
-	
-	if (recv(nSocket, receive_buffer, 256, 0) == -1) {
-		MessageBox(_T("Can not send answer"));
-	}
-	else {
-		res = split(receive_buffer, ",");
-		if (res.size() >= 8) {
-			if (res[7].compare("") != 0 && res[7].find("Lost") != std::string::npos) {
-				MessageBox(_T("You lost"));
-				MessageBox(_T("1"));
 
-			}
-			else if (res[7].compare("") != 0 && res[7].find("Congratulations") != std::string::npos) {
-				MessageBox(_T("Congratulations, you are the winner"));
-				MessageBox(_T("2"));
-			}
-			else if (res[5].compare("") != 0 && res[5].compare("Correct guess") == 0) {
-				MessageBox(_T("Correct guess"));
-				MessageBox(_T("3"));
-			}
-			else if (res[5].compare("") != 0 && res[5].compare("Wrong guess") == 0) {
-				MessageBox(_T("Wrong guess"));
-				MessageBox(_T("4"));
-			}
-			CString score = _T("");;
-			score = res[4].c_str();
-			txtScore.SetWindowTextW(score);
-			CString messTmp = _T("");
-			messTmp = res[6].c_str();
-			MessageBox(messTmp);
-			if (res[6].compare("Your turn") == 0) {
-				GetDlgItem(IDC_SENDANSWER)->EnableWindow(TRUE);
-			}
-			else {
-				GetDlgItem(IDC_SENDANSWER)->EnableWindow(FALSE);
-			}
 
-		}
-		if (res.size() < 8) {
-			if (res[5].compare("") != 0 && res[5].compare("Correct guess") == 0) {
-				MessageBox(_T("Correct guess"));
-				MessageBox(_T("5"));
-			}
-			else if (res[5].compare("") != 0 && res[5].compare("Wrong guess") == 0) {
-				MessageBox(_T("Wrong guess"));
-				MessageBox(_T("6"));
-			}
-			CString score = _T("");
-			score = res[4].c_str();
-			txtScore.SetWindowTextW(score);
+	//if (recv(nSocket, receive_buffer, 256, 0) == -1) {
+	//	MessageBox(_T("Can not send answer"));
+	//}
+	//else {
+	//	res = split(receive_buffer, ",");
 
-			CString messTmp = _T("");
-			messTmp = res[6].c_str();
-			MessageBox(messTmp);
-			MessageBox(_T("5"));
-			if (res[6].compare("Your turn") == 0) {
-				GetDlgItem(IDC_SENDANSWER)->EnableWindow(TRUE);
-			}
-			else {
-				GetDlgItem(IDC_SENDANSWER)->EnableWindow(FALSE);
-			}
+	//	if (res.size() >= 8) {
+	//		if (res[7].compare("") != 0 && res[7].find("Lost") != std::string::npos) {
+	//			MessageBox(_T("You lost"));
 
-		}
+	//		}
+	//		else if (res[7].compare("") != 0 && res[7].find("Congratulations") != std::string::npos) {
+	//			MessageBox(_T("Congratulations, you are the winner"));
+	//		}
+	//		else if (res[5].compare("") != 0 && res[5].compare("Correct guess") == 0) {
+	//			MessageBox(_T("Correct guess"));
+	//		}
+	//		else if (res[5].compare("") != 0 && res[5].compare("Wrong guess") == 0) {
+	//			MessageBox(_T("Wrong guess"));
+	//		}
 
-	}
-	
+
+	//		CString name;
+	//		name = res[3].c_str();
+	//		txtClientName.SetWindowText(name);
+
+	//		CString score = _T("");;
+	//		score = res[4].c_str();
+	//		txtScore.SetWindowTextW(score);
+	//		CString messTmp = _T("");
+	//		messTmp = res[6].c_str();
+	//		MessageBox(messTmp);
+	//		if (res[6].compare("Your turn") == 0) {
+	//			GetDlgItem(IDC_SENDANSWER)->EnableWindow(TRUE);
+	//		}
+	//		else {
+	//			GetDlgItem(IDC_SENDANSWER)->EnableWindow(FALSE);
+	//		}
+	//		
+	//	}
+	//	if(res.size() < 8 && res.size() >= 6) {
+	//		if (res[5].compare("") != 0 && res[5].compare("Correct guess") == 0) {
+	//		MessageBox(_T("Correct guess"));
+	//		}
+	//		else if (res[5].compare("") != 0 && res[5].compare("Wrong guess") == 0) {
+	//		MessageBox(_T("Wrong guess"));
+	//		}
+	//		else if (res[5].compare("") != 0 && res[5].compare("Not start") == 0) {
+	//			MessageBox(_T("Please wait for game start"));
+	//		}
+
+	//		// hinh nhu correct thi moi can chay khuc duoi dien vo list
+	//		CString name;
+	//		name = res[3].c_str();
+	//		txtClientName.SetWindowText(name);
+
+	//		CString score = _T("");;
+	//		score = res[4].c_str();
+	//		txtScore.SetWindowTextW(score);
+
+	//		CString messTmp = _T("");
+	//		messTmp = res[6].c_str();
+	//		if (res[6].compare("Your turn") == 0) {
+	//			GetDlgItem(IDC_SENDANSWER)->EnableWindow(TRUE);
+	//		}
+	//		else {
+	//			GetDlgItem(IDC_SENDANSWER)->EnableWindow(FALSE);
+	//		}
+
+	//	}
+	//	else {
+	//		MessageBox(_T("Please wait for game start"));
+	//	}
+	//			
+	//}
+	////else {
+	////	GetDlgItem(IDC_SENDANSWER)->EnableWindow(FALSE);
+	////	MessageBox(_T("Please wait for your turn..."));
+	////}
+	//
+
+
+	////if (turn.compare("Your turn") == 0) {
+	////	std::cout << "Input:" << std::endl;
+	////	/*getline(std::cin, send_buffer);
+	////	send_buffer.append(",").append("1");
+	////	send(nSocket, send_buffer.c_str(), 256, 0);
+	////	cout << "Sended.." << endl;*/
+	////}
+
+	///*else {
+	//	if (res.size() >= 8 && res[7] != "" && res[7].find("Lost") != std::string::npos) {
+	//		cout << "Wait..." << endl;
+	//		break;
+	//	}
+	//	if (res.size() >= 8 && res[7] != "" && res[7].find("Congratulations") != std::string::npos) {
+	//		cout << "~~~ You win. End game ~~~" << endl;
+	//		break;
+	//	}
+	//}*/
+
+	//// TODO: Add your control notification handler code here
+	//
+
+	////Send response to Server, with format: keyword,guessword
+	//
+	////CT2A buff(responseMsg, CP_UTF8);
+	////->send to server
+
+	//txtGuessWord.SetWindowTextW(_T(""));
+	//txtKeyWord.SetWindowTextW(_T(""));
+
+	////Receive from Server
+
+	//std::string gW = CT2A(guessW);
+	//std::string kW = CT2A(keyW);
+	////HiddenRemain(gW, keyword, msg, disWord);
+	//
+	//// Display on list chat result
+	//listPlayGround.AddString((LPCTSTR)strconverter.from_bytes(msg).c_str());
+	//listPlayGround.AddString(CString("The Remain words: ") + disWord.c_str());
+	//listPlayGround.SetCurSel(listPlayGround.GetCount() - 1);
+
+	////// Show Score
+	////int score = 10;
+	////CString sc;
+	////sc.Format(_T("%d"), score);
+	////txtScore.SetWindowTextW(sc);
+
+	////Handle when user make wrong guess word/wrong keyword
+	//UpdateData(TRUE);
+
 }
 
 void CCLientPlayGround::OnTimer(UINT_PTR nIDEvent)
@@ -602,6 +858,6 @@ void CCLientPlayGround::OnTimer(UINT_PTR nIDEvent)
 	//
 	//UpdateData(TRUE);
 	//CDialogEx::OnTimer(nIDEvent);
-	
+
 }
 
