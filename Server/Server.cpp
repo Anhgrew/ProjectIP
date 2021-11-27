@@ -117,6 +117,9 @@ void Server::initiateServer()
 			this->keyword = keyword_list[rand() % keyword_list.size()];
 			std::cout << "KEYWORD: " << this->keyword->keyword << std::endl;
 			this->disword = std::string(this->keyword->keyword.length(), '*');
+			five_turn_check = 0;
+			//
+			start_new_game = false;
 		}
 		FD_ZERO(&fr);
 		FD_ZERO(&fw);

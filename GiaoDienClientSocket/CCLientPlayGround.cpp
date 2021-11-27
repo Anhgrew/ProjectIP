@@ -41,6 +41,7 @@ BEGIN_MESSAGE_MAP(CCLientPlayGround, CDialogEx)
 	ON_BN_CLICKED(IDC_SENDANSWER, &CCLientPlayGround::OnBnClickedSendanswer)
 	ON_BN_CLICKED(BTN_REFRESH, &CCLientPlayGround::OnBnClickedRefresh)
 	ON_WM_TIMER()
+
 END_MESSAGE_MAP()
 
 
@@ -87,7 +88,8 @@ BOOL CCLientPlayGround::OnInitDialog() {
 	}
 
 	//set readonly when turn < 2
-	txtKeyWord.SetReadOnly(FALSE);
+
+	txtKeyWord.SetReadOnly(TRUE);
 
 	CString name;
 	name = res[4].c_str();
@@ -118,12 +120,19 @@ void CCLientPlayGround::OnBnClickedSendanswer(){
 		guessW = string("#").c_str();
 	}
 
-	responseMsg = keyW + "," + guessW;
+	if(guessW.GetLength() > 1) {
+		MessageBox(_T("Please input only one character for guess word..."));
+	}
+	else {
+		responseMsg = keyW + "," + guessW;
 
-	send(nSocket, CStringA(responseMsg), 256, 0);
+		send(nSocket, CStringA(responseMsg), 256, 0);
 
-	txtGuessWord.SetWindowTextW(_T(""));
-	txtKeyWord.SetWindowTextW(_T(""));
+		txtGuessWord.SetWindowTextW(_T(""));
+		txtKeyWord.SetWindowTextW(_T(""));
+	}
+
+
 
 	UpdateData(FALSE);
 }
@@ -184,7 +193,15 @@ UINT CCLientPlayGround::threadHandle()
 
 	while (recv(nSocket, receive_buffer, 256, 0) != SOCKET_ERROR)
 	{
-		
+
+		if (checkTurnTwo >= 1) {
+			txtKeyWord.SetReadOnly(FALSE);
+			if (checkTurnTwo == 1) {
+				MessageBox(_T("Turn two, you can give the full keyword to win or lose"));
+			}
+		}
+
+
 		res = split(receive_buffer, ",");
 		std::string gW = CT2A(guessW);
 		std::string kW = CT2A(keyW);
@@ -223,7 +240,7 @@ UINT CCLientPlayGround::threadHandle()
 			name = res[3].c_str();
 			txtClientName.SetWindowText(name);
 
-			CString score = _T("");;
+			CString score = _T("");
 			score = res[4].c_str();
 			txtScore.SetWindowTextW(score);
 
@@ -236,6 +253,7 @@ UINT CCLientPlayGround::threadHandle()
 
 		}
 		if (res.size() < 10 && res.size() >= 7) {
+			checkTurnTwo++;
 			if (res[5].compare("") != 0 && res[5].compare("Correct guess") == 0) {
 				MessageBox(_T("Correct guess"));
 				disWord = res[8];
@@ -246,6 +264,7 @@ UINT CCLientPlayGround::threadHandle()
 				MessageBox(_T("Wrong guess"));
 			}
 			else if (res[5].compare("") != 0 && res[5].compare("Not start") == 0) {
+				checkTurnTwo--;
 				MessageBox(_T("Please wait for game starting"));
 			}
 
@@ -436,4 +455,7 @@ void CCLientPlayGround::OnTimer(UINT_PTR nIDEvent)
 	//CDialogEx::OnTimer(nIDEvent);
 
 }
+
+
+
 

@@ -42,6 +42,8 @@ public:
 	CEdit txtScore;
 	std::string msg;
 
+	int checkTurnTwo = 0;
+
 	using convert_t = std::codecvt_utf8<wchar_t>;
 	std::wstring_convert<convert_t, wchar_t> strconverter;
 	std::vector< std::vector<std::string> > records;
