@@ -7,6 +7,10 @@
 #include <string>
 #include<winsock2.h>
 #include"Client.h"
+#define UNICODE
+#define _UNICODE
+#include <windows.h>
+#include <tchar.h>
 
 #include <iostream>
 
@@ -59,6 +63,7 @@ public:
 	int nSocket;
 	sockaddr_in srv;
 	int index;
+	string score;
 
 	//
 	HANDLE handle;
