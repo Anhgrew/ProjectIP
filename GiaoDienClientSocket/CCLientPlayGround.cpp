@@ -267,6 +267,7 @@ UINT CCLientPlayGround::threadHandle()
 				MessageBox(_T("You lost"));
 			}
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 			else if (res[7].compare("") != 0 && res[7].find("Congratulations") != std::string::npos) {
 				MessageBox(_T("Congratulations, you are the winner"));
 			}
@@ -277,6 +278,8 @@ UINT CCLientPlayGround::threadHandle()
 				transform(gW.begin(), gW.end(), gW.begin(), ::toupper);
 				transform(kW.begin(), kW.end(), kW.begin(), ::toupper);
 =======
+=======
+>>>>>>> Stashed changes
 			else if (res[9].compare("") != 0 && res[9].find("Congratulations") != std::string::npos ) {
 				MessageBox(_T("Congratulations, you are the winner")); 
 				disWord = res[7];
@@ -292,6 +295,9 @@ UINT CCLientPlayGround::threadHandle()
 			}
 			else if (res[5].compare("") != 0 && res[5].compare("Correct guess") == 0) {
 				MessageBox(_T("Correct guess"));
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 				disWord = res[8];
 				HiddenRemain(gW, res[7], msg, disWord);
