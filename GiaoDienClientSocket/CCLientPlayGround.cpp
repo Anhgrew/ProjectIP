@@ -261,21 +261,15 @@ UINT CCLientPlayGround::threadHandle()
 			else if (res[9].compare("") != 0 && res[9].find("Congratulations") != std::string::npos) {
 				MessageBox(_T("Congratulations, you are the winner")); 
 				disWord = res[7];
-
+				for (int i = 10; i < 12; i++) {
+					MessageBoxA(NULL, res[i].c_str(), "Summary ", MB_OK);
+				}
 			}
 			else if (res[5].compare("") != 0 && res[5].compare("Correct guess") == 0) {
 				MessageBox(_T("Correct guess"));
-				//std::string gW = CT2A(guessW);
-				//std::string kW = CT2A(keyW);
-				//transform(gW.begin(), gW.end(), gW.begin(), ::toupper);
-				//transform(kW.begin(), kW.end(), kW.begin(), ::toupper);
 				disWord = res[8];
 				HiddenRemain(gW, res[7], msg, disWord);
-
-				// Display on list chat result
-				//listPlayGround.AddString((LPCTSTR)strconverter.from_bytes(msg).c_str());
-				//listPlayGround.AddString(CString("KEYWORD: ") + disWord.c_str());
-				//listPlayGround.SetCurSel(listPlayGround.GetCount() - 1);
+		
 			}
 			else if (res[5].compare("") != 0 && res[5].compare("Wrong guess") == 0) {
 				MessageBox(_T("Wrong guess"));
@@ -302,6 +296,7 @@ UINT CCLientPlayGround::threadHandle()
 				GetDlgItem(IDC_SENDANSWER)->EnableWindow(TRUE);
 			}
 			else {
+
 				GetDlgItem(IDC_SENDANSWER)->EnableWindow(FALSE);
 			}
 

@@ -509,7 +509,10 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 						
 					if (game_end) {
 						message.append(",").append("Congratulations to the winner [ " + winner + " ]" + " with the correct keyword is: " + keyword->keyword);
-						
+						for (int i = 0; i < users.size(); i++) {
+							std::cout << "Rank " << i << " is player " << users[i]->name << " with score " << users[i]->score << std::endl;
+							message.append(",").append("Rank " + std::to_string(i + 1) + " with name is " + users[i]->name + "with score is " + std::to_string(users[i]->score));
+						}
 					}
 					if (users[i]->final_ans) {
 						message.append(",").append("Lost the game with score: " + std::to_string(users[i]->score));
@@ -539,6 +542,9 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 
 						if (game_end) {
 							message.append(",").append("Congratulations to the winner [ " + winner + " ]" + " with the correct keyword is: " + keyword->keyword);
+							for (int n = 0; n < users.size(); n++) {
+								message.append(",").append("Rank " + std::to_string(n + 1) + " with name is " + users[n]->name + "with score is " + std::to_string(users[n]->score));
+							}
 						}
 						std::cout << "Send to user: " << users[j]->name << "- Socket: " << users[j]->socket_id << "- Mess: " << message << std::endl;
 						send(users[j]->socket_id, message.c_str(), message.size(), 0);
@@ -546,6 +552,10 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 				}
 				send(users[i]->socket_id, message.c_str(), message.size(), 0);
 				if (game_end) {
+					for (int i = 0; i < users.size(); i++) {
+						std::cout << "Rank " << i + 1 << " is player " << users[i]->name << " with score " << users[i]->score << std::endl;
+						message.append(",").append("Rank " + std::to_string(i + 1) + " with name is " + users[i]->name + "with score is " + std::to_string(users[i]->score));
+					}
 					start_new_game = true;
 				}
 			}
