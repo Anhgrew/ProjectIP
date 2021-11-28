@@ -180,8 +180,8 @@ void CGiaoDienClientSocketDlg::OnOK()
 
 void CGiaoDienClientSocketDlg::OnClose() {
 	//kil thread
-	TerminateThread(checkServerThread, 0);
-	TerminateThread(receiveLog, 0);
+	//TerminateThread(checkServerThread, 0);
+	//TerminateThread(receiveLog, 0);
 
 	//tắt window
 	CDialog::OnClose();

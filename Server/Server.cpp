@@ -379,12 +379,15 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 	std::string response_message = "";
 	std::cout << "Keyword: " << word_key << std::endl;
 	std::cout << "Guess word: " << word_guess << "--------" << std::endl;
-
+	
 	for (auto user : users) {
 		if (user->socket_id == client_socket) {
 			user->ans = word_key;
 			user->guess = word_guess;
-
+			if (word_guess.compare("#") == 0 && word_key.compare("#") == 0) {
+				response_message = "Not answer";
+				break;
+			}
 			if (word_key.compare("#") == 0) {
 				if (keyword->keyword.find(word_guess) != std::string::npos) {
 					response_message = "Correct guess";
@@ -415,7 +418,7 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 		if (users[i] != NULL && users[i]->socket_id != 0 && users[i]->socket_id == client_socket) {
 
 			if (users[i]->turn) {
-				if (response_message.compare("Wrong keyword") == 0 || response_message.compare("Wrong guess") == 0) {
+				if (response_message.compare("Wrong keyword") == 0 || response_message.compare("Wrong guess") == 0 || response_message.compare("Not answer") == 0) {
 					users[i]->turn = false;
 
 					User* next_user = findNextUser(i);
@@ -433,6 +436,10 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 						users[i]->status = "Wrong guess";
 					}
 
+
+					if (response_message.compare("Not answer") == 0) {
+						users[i]->status = "Not answer";
+					}
 				/*	for (int j = 0; j < users.size(); j++) {
 						if (users[j]->socket_id != client_socket) {
 							std::string message = std::to_string(keyword->keyword.size())

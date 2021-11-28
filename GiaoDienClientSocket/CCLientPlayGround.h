@@ -9,7 +9,7 @@
 #include"Client.h"
 
 #include <iostream>
-
+#define TIME 30
 // CCLientPlayGround dialog
 
 class CCLientPlayGround : public CDialogEx
@@ -44,6 +44,8 @@ public:
 
 	int checkTurnTwo = 0;
 
+	int time = TIME;
+
 	using convert_t = std::codecvt_utf8<wchar_t>;
 	std::wstring_convert<convert_t, wchar_t> strconverter;
 	std::vector< std::vector<std::string> > records;
@@ -53,6 +55,7 @@ public:
 	CString responseMsg;
 	CString guessW;
 	CString keyW;
+	CString clock_time;
 
 	//
 
@@ -61,6 +64,14 @@ public:
 	int nSocket;
 	sockaddr_in srv;
 	int index;
+
+
+	//
+	HANDLE handle_timer;
+	CWinThread* thread_timer;
+	static UINT __cdecl staticThreadHandleTimer(LPVOID pParam);
+	UINT threadHandleTimer();
+
 
 	//
 	HANDLE handle;
@@ -73,6 +84,6 @@ public:
 	CEdit txtClientName;
 
 	Client* play_client;
-	afx_msg void OnBnClickedRefresh();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	CEdit clock;
 };
