@@ -63,7 +63,7 @@ BOOL CCLientPlayGround::OnInitDialog() {
 
 	GetDlgItem(IDC_SENDANSWER)->EnableWindow(FALSE);
 	char receive_buffer[256];
-	memset(receive_buffer, 0, sizeof receive_buffer);
+	std::memset(receive_buffer, 0, sizeof receive_buffer);
 	std::vector<std::string> res;
 
 	if (recv(nSocket, receive_buffer, 256, 0) == -1) {
@@ -74,8 +74,12 @@ BOOL CCLientPlayGround::OnInitDialog() {
 
 		if (res.size() >= 9 && res[0].compare("Let 's start") == 0 && res[6].compare("Your turn") == 0) {
 			// start timer thread;
-
+			
 			time = TIME;
+
+			clock_time.Format(L"%d", time);
+			clock.SetWindowTextW(clock_time);
+
 			thread_timer = AfxBeginThread(staticThreadHandleTimer, this);
 			handle_timer = thread_timer->m_hThread;
 
@@ -87,6 +91,17 @@ BOOL CCLientPlayGround::OnInitDialog() {
 			listPlayGround.SetCurSel(listPlayGround.GetCount() - 1);
 		}
 		else {
+
+			if (thread_timer != NULL) {
+				TerminateThread(handle_timer, 0);
+				CloseHandle(handle_timer);
+				thread_timer = NULL;
+				time = TIME;
+			}
+			time = TIME;
+			clock_time.Format(L"%d", time);
+			clock.SetWindowTextW(clock_time);
+
 			GetDlgItem(IDC_SENDANSWER)->EnableWindow(FALSE);
 			listPlayGround.AddString(CString("HINT: ") + (LPCTSTR)strconverter.from_bytes(res[2]).c_str());
 			disWord = res[8];
@@ -144,6 +159,9 @@ void CCLientPlayGround::OnBnClickedSendanswer(){
 			thread_timer = NULL;
 			time = TIME;
 		}
+		time = TIME;
+		clock_time.Format(L"%d", time);
+		clock.SetWindowTextW(clock_time);
 
 		send(nSocket, CStringA(responseMsg), 256, 0);
 
@@ -234,7 +252,7 @@ UINT CCLientPlayGround::threadHandle()
 
 	char receive_buffer[256];
 	std::vector<std::string> res;
-	memset(receive_buffer, 0, sizeof receive_buffer);
+	std::memset(receive_buffer, 0, sizeof receive_buffer);
 	
 
 	while (recv(nSocket, receive_buffer, 256, 0) != SOCKET_ERROR)
@@ -248,17 +266,87 @@ UINT CCLientPlayGround::threadHandle()
 		}
 
 
+
 		res = split(receive_buffer, ",");
 		std::string gW = CT2A(guessW);
 		std::string kW = CT2A(keyW);
 		transform(gW.begin(), gW.end(), gW.begin(), ::toupper);
 		transform(kW.begin(), kW.end(), kW.begin(), ::toupper);
 
+		if (res.size() >= 8 && res[6].compare("Reset turn") == 0) {
+
+			//reset clock
+
+			if (res[3].compare("0") == 0) {
+				if (thread_timer != NULL) {
+					TerminateThread(handle_timer, 0);
+					CloseHandle(handle_timer);
+					thread_timer = NULL;
+					time = TIME;
+				}
+
+				time = TIME;
+				clock_time.Format(L"%d", time);
+				clock.SetWindowTextW(clock_time);
+
+				GetDlgItem(IDC_SENDANSWER)->EnableWindow(TRUE);
+				time = TIME;
+				//thread_timer = AfxBeginThread(staticThreadHandleTimer, this);
+				//handle_timer = thread_timer->m_hThread;
+				res[6] = "Your turn";
+			
+			}
+			else {
+
+				if (thread_timer != NULL) {
+					TerminateThread(handle_timer, 0);
+					CloseHandle(handle_timer);
+					thread_timer = NULL;
+					time = TIME;
+				}
+				GetDlgItem(IDC_SENDANSWER)->EnableWindow(FALSE);
+				res[6] = "No turn";
+				time = TIME;
+				clock_time.Format(L"%d", time);
+				clock.SetWindowTextW(clock_time);
+			}
+
+			//
+			listPlayGround.AddString(CString("______________NEW GAME__________________________"));
+			
+			listPlayGround.AddString(CString("HINT: ") + (LPCTSTR)strconverter.from_bytes(res[2]).c_str());
+			disWord = res[8];
+			HiddenRemain("", res[7], msg, disWord);
+			listPlayGround.AddString(CString("KEYWORD: ") + disWord.c_str());
+			listPlayGround.SetCurSel(listPlayGround.GetCount() - 1);
+			MessageBox(_T(">>> New game <<<"));
+		}
+
 		if (res.size() >= 10) {
 			if (res[9].compare("") != 0 && res[9].find("Lost") != std::string::npos) {
+				if (thread_timer != NULL) {
+					TerminateThread(handle_timer, 0);
+					CloseHandle(handle_timer);
+					thread_timer = NULL;
+					time = TIME;
+				}
+				time = TIME;
+				clock_time.Format(L"%d", time);
+				clock.SetWindowTextW(clock_time);
 				MessageBox(_T("You lost"));
 			}
 			else if (res[9].compare("") != 0 && res[9].find("Congratulations") != std::string::npos) {
+				if (thread_timer != NULL) {
+					TerminateThread(handle_timer, 0);
+					CloseHandle(handle_timer);
+					thread_timer = NULL;
+					time = TIME;
+				}
+
+				time = TIME;
+				clock_time.Format(L"%d", time);
+				clock.SetWindowTextW(clock_time);
+
 				MessageBox(_T("Congratulations, you are the winner")); 
 				disWord = res[7];
 				for (int i = 10; i < 12; i++) {
@@ -290,12 +378,25 @@ UINT CCLientPlayGround::threadHandle()
 
 				// start timer thread;
 				time = TIME;
+				clock_time.Format(L"%d", time);
+				clock.SetWindowTextW(clock_time);
 				thread_timer = AfxBeginThread(staticThreadHandleTimer, this);
 				handle_timer = thread_timer->m_hThread;
 
 				GetDlgItem(IDC_SENDANSWER)->EnableWindow(TRUE);
 			}
 			else {
+
+				if (thread_timer != NULL) {
+					TerminateThread(handle_timer, 0);
+					CloseHandle(handle_timer);
+					thread_timer = NULL;
+					time = TIME;
+				}
+
+				time = TIME;
+				clock_time.Format(L"%d", time);
+				clock.SetWindowTextW(clock_time);
 
 				GetDlgItem(IDC_SENDANSWER)->EnableWindow(FALSE);
 			}
@@ -335,12 +436,26 @@ UINT CCLientPlayGround::threadHandle()
 				// start timer thread;
 
 				time = TIME;
+				clock_time.Format(L"%d", time);
+				clock.SetWindowTextW(clock_time);
 				thread_timer = AfxBeginThread(staticThreadHandleTimer, this);
 				handle_timer = thread_timer->m_hThread;
 
 				GetDlgItem(IDC_SENDANSWER)->EnableWindow(TRUE);
 			}
 			else {
+
+				if (thread_timer != NULL) {
+					TerminateThread(handle_timer, 0);
+					CloseHandle(handle_timer);
+					thread_timer = NULL;
+					time = TIME;
+				}
+
+				time = TIME;
+				clock_time.Format(L"%d", time);
+				clock.SetWindowTextW(clock_time);
+
 				GetDlgItem(IDC_SENDANSWER)->EnableWindow(FALSE);
 			}
 
@@ -349,7 +464,7 @@ UINT CCLientPlayGround::threadHandle()
 		listPlayGround.AddString(CString("KEYWORD: ") + disWord.c_str());
 		listPlayGround.SetCurSel(listPlayGround.GetCount() - 1);
 
-		memset(receive_buffer, 0, sizeof receive_buffer);
+		std::memset(receive_buffer, 0, sizeof receive_buffer);
 		
 	}
 

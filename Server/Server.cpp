@@ -113,13 +113,56 @@ void Server::initiateServer()
 	std::cout << "KEYWORD: " << this->keyword->keyword << std::endl;
 	this->disword = std::string(this->keyword->keyword.length(), '*');
 	while (1) {
-		if (start_new_game || (five_turn_check == 5 && has_ans == false)) {
+		if (five_turn_check == 5 && game_end == false && has_ans) {
+			five_turn_check = 0;
+			has_ans = false;
+		}
+		if (game_end || (five_turn_check == 5 && has_ans == false)) {
 			this->keyword = keyword_list[rand() % keyword_list.size()];
 			std::cout << "KEYWORD: " << this->keyword->keyword << std::endl;
 			this->disword = std::string(this->keyword->keyword.length(), '*');
 			five_turn_check = 0;
 			//
+			for (auto user : users) {
+				if (user->id != 0) {
+					user->status = "";     // success, miss, win, lose
+					user->ans = "";        // answer 1 character
+					user->guess = "";
+					user->final_ans = false; // answer whole keyword     
+					user->score = 0;
+					user->turn = false;    // current turn
+				}
+				else {
+					user->turn = true;
+					user->status = "";     // success, miss, win, lose
+					user->ans = "";        // answer 1 character
+					user->guess = "";
+					user->final_ans = false; // answer whole keyword     
+					user->score = 0;
+				}
+				std::string ms = std::string("Let 's start")
+					.append(",")
+					.append(std::to_string(keyword->keyword.size()))
+					.append(",")
+					.append(keyword->description)
+					.append(",")
+					.append(std::to_string(user->id))
+					.append(",")
+					.append(user->name)
+					.append(",")
+					.append(std::to_string(user->score))
+					.append(",")
+					.append("Reset turn")
+					.append(",")
+					.append(keyword->keyword)
+					.append(",")
+					.append(disword);
+				send(user->socket_id, ms.c_str(), ms.size(), 0);
+				std::cout << "Return message: " << ms << std::endl;
+			}
+			
 			start_new_game = false;
+			game_end = false;
 		}
 		FD_ZERO(&fr);
 		FD_ZERO(&fw);
@@ -363,7 +406,7 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 {
 
 	std::vector< std::string> ans = split(buffer, ",");
-	five_turn_check++;
+	
 	for (auto i : ans) {
 		std::cout << i << " - " << std::endl;
 	}
@@ -379,7 +422,9 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 	std::string response_message = "";
 	std::cout << "Keyword: " << word_key << std::endl;
 	std::cout << "Guess word: " << word_guess << "--------" << std::endl;
-	
+
+	five_turn_check++;
+	std::cout << "Turn : " << five_turn_check << std::endl;
 	for (auto user : users) {
 		if (user->socket_id == client_socket) {
 			user->ans = word_key;
@@ -388,6 +433,7 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 				response_message = "Not answer";
 				break;
 			}
+			
 			if (word_key.compare("#") == 0) {
 				if (keyword->keyword.find(word_guess) != std::string::npos) {
 					response_message = "Correct guess";
@@ -400,6 +446,7 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 			}
 			else {
 				if (keyword->keyword.compare(word_key) == 0) {
+					
 					response_message = "Correct keyword";
 					has_ans = true;
 				}
@@ -471,11 +518,11 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 
 				}
 				else if (i <= users.size() - 1 && response_message.compare("Correct guess") == 0) {
+					has_ans = true;
 					users[i]->score += 1;
 					users[i]->status = "Correct guess";
 					if (disword.compare(keyword->keyword) == 0) {
 						response_message = "Correct keyword";
-						has_ans = true;
 						winner = users[i]->name;
 						users[i]->score += 5;
 						users[i]->status = "Correct keyword";
@@ -483,6 +530,7 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 					}
 				}
 				else if (i <= users.size() - 1 && response_message.compare("Correct keyword") == 0) {
+					has_ans = true;
 					winner = users[i]->name;
 					users[i]->score += 5;
 					users[i]->status = "Correct keyword";
@@ -511,13 +559,13 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 						message.append(",").append("Congratulations to the winner [ " + winner + " ]" + " with the correct keyword is: " + keyword->keyword);
 						for (int i = 0; i < users.size(); i++) {
 							std::cout << "Rank " << i << " is player " << users[i]->name << " with score " << users[i]->score << std::endl;
-							message.append(",").append("Rank " + std::to_string(i + 1) + " with name is " + users[i]->name + "with score is " + std::to_string(users[i]->score));
+							message.append(",").append("Rank " + std::to_string(i + 1) + " with name is " + users[i]->name + " with score is " + std::to_string(users[i]->score));
 						}
 					}
 					if (users[i]->final_ans) {
 						message.append(",").append("Lost the game with score: " + std::to_string(users[i]->score));
 
-				}
+					}
 				std::cout << "Send to user: " << users[i]->name << "- Socket: " << users[i]->socket_id << "- Mess: " << message << std::endl;
 
 				for (int j = 0; j < users.size(); j++) {
@@ -543,7 +591,7 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 						if (game_end) {
 							message.append(",").append("Congratulations to the winner [ " + winner + " ]" + " with the correct keyword is: " + keyword->keyword);
 							for (int n = 0; n < users.size(); n++) {
-								message.append(",").append("Rank " + std::to_string(n + 1) + " with name is " + users[n]->name + "with score is " + std::to_string(users[n]->score));
+								message.append(",").append("Rank " + std::to_string(n + 1) + " with name is " + users[n]->name + " with score is " + std::to_string(users[n]->score));
 							}
 						}
 						std::cout << "Send to user: " << users[j]->name << "- Socket: " << users[j]->socket_id << "- Mess: " << message << std::endl;
@@ -554,7 +602,7 @@ void Server::ProcessUsers(char buffer[256], int client_socket)
 				if (game_end) {
 					for (int i = 0; i < users.size(); i++) {
 						std::cout << "Rank " << i + 1 << " is player " << users[i]->name << " with score " << users[i]->score << std::endl;
-						message.append(",").append("Rank " + std::to_string(i + 1) + " with name is " + users[i]->name + "with score is " + std::to_string(users[i]->score));
+						message.append(",").append("Rank " + std::to_string(i + 1) + " with name is " + users[i]->name + " with score is " + std::to_string(users[i]->score));
 					}
 					start_new_game = true;
 				}
